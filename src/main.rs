@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 use bevy_text_mode::TextModePlugin;
+
+use crate::graphics::GraphicsPlugin;
 use crate::loading::LoadingPlugin;
 use crate::survival::SurvivalPlugin;
 use crate::util::size;
@@ -37,6 +39,7 @@ fn main() {
         )
         .add_state::<GameState>()
         .add_plugin(TextModePlugin)
+        .add_plugin(GraphicsPlugin)
         .add_plugin(LoadingPlugin)
         .add_plugin(SurvivalPlugin)
         .add_startup_system(init)

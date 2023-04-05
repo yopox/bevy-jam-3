@@ -19,18 +19,25 @@ pub struct Text {
     pub x: usize,
     pub y: usize,
     pub z: f32,
+    bg: Palette,
+    fg: Palette,
     children: Vec<Entity>,
 }
 
-impl Text {
-    pub fn from_str(text: &str, x: usize, y: usize, z: f32) -> Self {
-        Self {
-            text: text.to_string(),
-            x,
-            y,
-            z,
-            children: vec![],
-        }
+pub fn text(text: &str, x: usize, y: usize, z: f32) -> Text {
+    Text {
+        text: text.to_string(),
+        x, y, z,
+        bg: Palette::BLACK, fg: Palette::WHITE,
+        children: vec![],
+    }
+}
+
+pub fn color_text(text: &str, x: usize, y: usize, z: f32, bg: Palette, fg: Palette) -> Text {
+    Text {
+        text: text.to_string(),
+        x, y, z, bg, fg,
+        children: vec![],
     }
 }
 
@@ -66,7 +73,7 @@ fn update_texts(
                 util::sprite(
                     glyph_index(char).unwrap_or(0),
                     text.x + i, text.y, text.z,
-                    Palette::BLACK, Palette::WHITE,
+                    text.bg, text.fg,
                     false, 0,
                     textures.mrmotext.clone()
                 )

@@ -22,10 +22,12 @@ pub mod z_pos {
     pub const GUI: f32 = 12.;
 }
 
+#[derive(Copy, Clone)]
 pub enum Palette {
     BLACK,
     WHITE,
     GRAY,
+    RED,
     TRANSPARENT,
 }
 
@@ -36,6 +38,7 @@ impl Palette {
             Palette::BLACK => Color::hex("#000000"),
             Palette::WHITE => Color::hex("#ffffff"),
             Palette::GRAY => Color::hex("#808080"),
+            Palette::RED => Color::hex("#ff4500"),
             Palette::TRANSPARENT => Color::hex("#00000000"),
         }.unwrap()
     }

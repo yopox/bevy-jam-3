@@ -1,7 +1,6 @@
 use bevy::prelude::{Commands, Handle};
 use bevy::sprite::TextureAtlas;
 
-use crate::graphics::text::Text;
 use crate::util;
 use crate::util::{Palette, size, z_pos};
 
@@ -35,6 +34,4 @@ pub fn spawn_frame(
             false, rotation, atlas.clone()
         ));
     }
-
-    commands.spawn(Text::from_str("score: 000000", 3, 1, z_pos::GUI));
 }

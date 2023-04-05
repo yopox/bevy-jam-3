@@ -7,6 +7,7 @@ pub mod frame;
 pub mod text;
 pub mod background;
 pub mod ship;
+pub mod tiles;
 
 pub struct GraphicsPlugin;
 

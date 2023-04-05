@@ -1,7 +1,6 @@
-use std::cmp::{min, max};
-use std::ops::Deref;
+use std::cmp::{max, min};
+
 use bevy::prelude::*;
-use bevy::reflect::Array;
 
 use crate::GameState;
 use crate::graphics::background::spawn_chains;
@@ -11,6 +10,7 @@ use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
 use crate::util::{Palette, z_pos};
+use crate::weapons::{Side, spawn_weapon, Weapons};
 
 pub struct SurvivalPlugin;
 
@@ -42,6 +42,8 @@ fn setup(
     spawn_frame(&mut commands, &textures.mrmotext);
     spawn_chains(&mut commands, &textures.mrmotext);
     spawn_ship(&mut commands, &textures.mrmotext);
+    spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext);
+    spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext);
 
     commands
         .spawn(text("score:000000", 3, 1, z_pos::GUI))

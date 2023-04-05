@@ -5,11 +5,13 @@ use crate::graphics::GraphicsPlugin;
 use crate::loading::LoadingPlugin;
 use crate::survival::SurvivalPlugin;
 use crate::util::size;
+use crate::weapons::WeaponPlugin;
 
 mod util;
 mod loading;
 mod graphics;
 mod survival;
+mod weapons;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum GameState {
@@ -42,6 +44,7 @@ fn main() {
         .add_plugin(GraphicsPlugin)
         .add_plugin(LoadingPlugin)
         .add_plugin(SurvivalPlugin)
+        .add_plugin(WeaponPlugin)
         .add_startup_system(init)
         .run();
 }

@@ -6,6 +6,7 @@ use crate::graphics::text::TextPlugin;
 pub mod frame;
 pub mod text;
 pub mod background;
+pub mod ship;
 
 pub struct GraphicsPlugin;
 

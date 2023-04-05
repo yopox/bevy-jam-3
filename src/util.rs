@@ -28,6 +28,7 @@ pub enum Palette {
     WHITE,
     GRAY,
     RED,
+    DARK_BLUE,
     TRANSPARENT,
 }
 
@@ -39,6 +40,7 @@ impl Palette {
             Palette::WHITE => Color::hex("#ffffff"),
             Palette::GRAY => Color::hex("#808080"),
             Palette::RED => Color::hex("#ff4500"),
+            Palette::DARK_BLUE => Color::hex("#151a2d"),
             Palette::TRANSPARENT => Color::hex("#00000000"),
         }.unwrap()
     }

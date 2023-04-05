@@ -1,11 +1,11 @@
 use std::cmp::{max, min};
-
+use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 
 use crate::GameState;
 use crate::graphics::background::spawn_chains;
 use crate::graphics::frame::spawn_frame;
-use crate::graphics::ship::spawn_ship;
+use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_y};
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
@@ -17,9 +17,10 @@ pub struct SurvivalPlugin;
 impl Plugin for SurvivalPlugin {
     fn build(&self, app: &mut App) {
         app
+            .add_event::<ShipMoveEvent>()
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
-                (update_score, increase_score, update_life)
+                (update_score, increase_score, update_life, keyboard_dispatcher, update_ship_image, update_ship_y)
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -70,10 +71,11 @@ fn increase_score(
 }
 
 fn update_score(
-    mut query: Query<(&Score, &mut text::Text)>,
+    mut query: Query<(&Score, &mut text::Text), Changed<Score>>,
 ) {
-    let (&Score(score), mut text) = query.single_mut();
-    text.text = format!("score[{:0>6}]", score / 100)
+    if let Ok((&Score(score), mut text)) = query.get_single_mut() {
+        text.text = format!("score:[{:0>6}]", score / 100)
+    }
 }
 
 const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
@@ -81,9 +83,26 @@ const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
 fn update_life(
     mut query: Query<(&mut text::Text, &Life), Changed<Life>>,
 ) {
-    for (mut text, &Life(lives)) in query.iter_mut() {
+    if let Ok((mut text, &Life(lives))) = query.get_single_mut() {
         let lives = min(5, max(0, lives)) as usize;
         text.text = LIFE_TEXTS[lives].into();
+    }
+}
+
+pub fn keyboard_dispatcher(
+    mut event_reader: EventReader<KeyboardInput>,
+    mut ship_event_writer: EventWriter<ShipMoveEvent>,
+) {
+    let mut ship_moved = 0;
+    for event in event_reader.iter() {
+        match event.key_code {
+            Some(KeyCode::Up) => ship_moved += 1,
+            Some(KeyCode::Down) => ship_moved -= 1,
+            _ => ()
+        }
+    }
+    if ship_moved != 0 {
+        ship_event_writer.send(ShipMoveEvent(ship_moved));
     }
 }
 

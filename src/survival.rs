@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::GameState;
+use crate::graphics::background::spawn_chains;
 use crate::graphics::frame::spawn_frame;
 use crate::graphics::text;
 use crate::loading::Textures;
@@ -24,6 +25,7 @@ fn setup(
     textures: Res<Textures>,
 ) {
     spawn_frame(&mut commands, &textures.mrmotext);
+    spawn_chains(&mut commands, &textures.mrmotext);
 }
 
 fn update(

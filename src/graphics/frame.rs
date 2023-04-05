@@ -5,7 +5,10 @@ use crate::graphics::text::Text;
 use crate::util;
 use crate::util::{Palette, size, z_pos};
 
-pub fn spawn_frame(commands: &mut Commands, atlas: &Handle<TextureAtlas>) {
+pub fn spawn_frame(
+    commands: &mut Commands,
+    atlas: &Handle<TextureAtlas>
+) {
     for y in 0..size::HEIGHT {
         for x in 0..size::WIDTH {
             if x < 2 || x + 3 > size::WIDTH || y < 3 || y + 2 > size::HEIGHT {

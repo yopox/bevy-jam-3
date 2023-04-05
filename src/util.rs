@@ -25,6 +25,7 @@ pub mod z_pos {
 pub enum Palette {
     BLACK,
     WHITE,
+    GRAY,
     TRANSPARENT,
 }
 
@@ -32,8 +33,9 @@ impl Palette {
     // TODO: Don't parse colors each time
     pub fn color(&self) -> Color {
         match self {
-            Palette::BLACK => Color::hex("#808080"),
-            Palette::WHITE => Color::hex("#c0c0c0"),
+            Palette::BLACK => Color::hex("#000000"),
+            Palette::WHITE => Color::hex("#ffffff"),
+            Palette::GRAY => Color::hex("#808080"),
             Palette::TRANSPARENT => Color::hex("#00000000"),
         }.unwrap()
     }

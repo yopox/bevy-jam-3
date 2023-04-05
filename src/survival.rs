@@ -1,4 +1,7 @@
+use std::cmp::min;
+use std::ops::Deref;
 use bevy::prelude::*;
+use bevy::reflect::Array;
 
 use crate::GameState;
 use crate::graphics::background::spawn_chains;
@@ -16,8 +19,11 @@ impl Plugin for SurvivalPlugin {
         app
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_system(
-                update
+                update_score
                     .in_set(OnUpdate(GameState::Survival))
+            )
+            .add_system(
+                increase_score.in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
     }
@@ -27,10 +33,10 @@ impl Plugin for SurvivalPlugin {
 struct SurvivalUI;
 
 #[derive(Component)]
-struct Score;
+struct Score(i64);
 
 #[derive(Component)]
-struct Life;
+struct Life(i8);
 
 fn setup(
     mut commands: Commands,
@@ -42,23 +48,40 @@ fn setup(
 
     commands
         .spawn(text("score:000000", 3, 1, z_pos::GUI))
-        .insert(Score)
+        .insert(Score(0))
         .insert(SurvivalUI);
     commands
         .spawn(text("lives:", 19, 1, z_pos::GUI))
         .insert(SurvivalUI);
     commands
         .spawn(color_text("****", 25, 1, z_pos::GUI, Palette::BLACK, Palette::RED))
-        .insert(Life)
+        .insert(Life(5))
         .insert(SurvivalUI);
 }
 
-fn update(
-    mut score: Query<&mut text::Text, With<Score>>,
+fn increase_score(
+    time: Res<Time>,
+    mut query: Query<&mut Score>,
 ) {
-    let mut text = score.single_mut();
-    let Some((_, score)) = text.text.split_once(":") else { return };
-    text.text = format!("score:{:0>6}", score.parse::<usize>().unwrap() + 1)
+    let mut score = query.single_mut();
+    score.0 += time.delta().as_millis() as i64;
+}
+
+fn update_score(
+    mut query: Query<(&Score, &mut text::Text)>,
+) {
+    let (&Score(score), mut text) = query.single_mut();
+    text.text = format!("score:{:0>6}", score / 100_000)
+}
+
+const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
+
+fn update_life(
+    mut query: Query<(&mut text::Text, &Life), Changed<Life>>,
+) {
+    let (mut text, &Life(lives)) = query.single_mut();
+    let lives = min(5, Ord::max(0, lives)) as usize;
+    text.text = LIFE_TEXTS.get(lives).unwrap().deref().into();
 }
 
 fn cleanup(

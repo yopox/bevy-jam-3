@@ -46,15 +46,18 @@ fn setup(
     spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext);
 
     commands
-        .spawn(text("score:000000", 3, 1, z_pos::GUI))
+        .spawn(text("score[000000]", 3, 1, z_pos::GUI))
         .insert(Score(0))
         .insert(SurvivalUI);
     commands
-        .spawn(text("lives:", 19, 1, z_pos::GUI))
+        .spawn(text("life[", 18, 1, z_pos::GUI))
         .insert(SurvivalUI);
     commands
-        .spawn(color_text("****", 25, 1, z_pos::GUI, Palette::BLACK, Palette::RED))
+        .spawn(color_text("****", 23, 1, z_pos::GUI, Palette::BLACK, Palette::RED))
         .insert(Life(5))
+        .insert(SurvivalUI);
+    commands
+        .spawn(text("]", 28, 1, z_pos::GUI))
         .insert(SurvivalUI);
 }
 
@@ -70,7 +73,7 @@ fn update_score(
     mut query: Query<(&Score, &mut text::Text)>,
 ) {
     let (&Score(score), mut text) = query.single_mut();
-    text.text = format!("score:{:0>6}", score / 100)
+    text.text = format!("score[{:0>6}]", score / 100)
 }
 
 const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];

@@ -4,6 +4,7 @@ use bevy_text_mode::TextModeSpriteSheetBundle;
 
 use crate::util::{Palette, sprite};
 
+#[derive(Copy, Clone)]
 pub struct Tile {
     pub index: usize,
     pub bg: Palette,

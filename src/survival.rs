@@ -1,4 +1,4 @@
-use std::cmp::min;
+use std::cmp::{min, max};
 use std::ops::Deref;
 use bevy::prelude::*;
 use bevy::reflect::Array;
@@ -18,12 +18,9 @@ impl Plugin for SurvivalPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
-            .add_system(
-                update_score
+            .add_systems(
+                (update_score, increase_score, update_life)
                     .in_set(OnUpdate(GameState::Survival))
-            )
-            .add_system(
-                increase_score.in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
     }
@@ -71,7 +68,7 @@ fn update_score(
     mut query: Query<(&Score, &mut text::Text)>,
 ) {
     let (&Score(score), mut text) = query.single_mut();
-    text.text = format!("score:{:0>6}", score / 100_000)
+    text.text = format!("score:{:0>6}", score / 100)
 }
 
 const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
@@ -79,9 +76,10 @@ const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
 fn update_life(
     mut query: Query<(&mut text::Text, &Life), Changed<Life>>,
 ) {
-    let (mut text, &Life(lives)) = query.single_mut();
-    let lives = min(5, Ord::max(0, lives)) as usize;
-    text.text = LIFE_TEXTS.get(lives).unwrap().deref().into();
+    for (mut text, &Life(lives)) in query.iter_mut() {
+        let lives = min(5, max(0, lives)) as usize;
+        text.text = LIFE_TEXTS[lives].into();
+    }
 }
 
 fn cleanup(

@@ -8,7 +8,7 @@ use crate::util::{is_oob, Palette, z_pos};
 
 /// Kind of shots
 #[derive(Copy, Clone)]
-enum Shots {
+pub enum Shots {
     /// Straight line, 1 tile
     Simple,
     /// 2 shots, diagonal (45 deg)
@@ -19,11 +19,12 @@ enum Shots {
 
 /// Weapon description (left orientation)
 #[derive(Copy, Clone)]
-struct Weapon {
-    shots: Shots,
-    tile: Tile,
-    shot_tile: Tile,
-    cooldown: u16,
+pub struct Weapon {
+    pub shots: Shots,
+    pub tile: Tile,
+    pub shot_tile: Tile,
+    pub cooldown: u16,
+    pub name: char,
 }
 
 pub enum Weapons {
@@ -38,6 +39,7 @@ impl Into<Weapon> for Weapons {
                 tile: Tiles::LeftHand.to_tile().with_fg(Palette::DARK_GRAY),
                 shot_tile: Tiles::Dash.to_tile().with_fg(Palette::DARK_GRAY),
                 cooldown: 40,
+                name: 'f',
             }
         }
     }
@@ -48,6 +50,7 @@ pub struct WeaponPlugin;
 impl Plugin for WeaponPlugin {
     fn build(&self, app: &mut App) {
         app
+            .add_event::<WeaponChanged>()
             .add_systems(
                 (update_weapons, shoot, update_shots)
                     .in_set(OnUpdate(GameState::Survival))
@@ -68,7 +71,9 @@ impl Side {
 }
 
 #[derive(Component)]
-pub struct ActiveWeapon(Side, Weapon);
+pub struct ActiveWeapon(pub Side, pub Weapon);
+
+pub struct WeaponChanged(pub Side, pub Weapon);
 
 #[derive(Component)]
 pub struct JustFired(u16);
@@ -84,7 +89,8 @@ pub fn spawn_weapon(
     weapon: Weapons,
     side: Side,
     commands: &mut Commands,
-    atlas: &Handle<TextureAtlas>
+    atlas: &Handle<TextureAtlas>,
+    weapon_changed: &mut EventWriter<WeaponChanged>,
 ) {
     let mut weapon: Weapon = weapon.into();
     if side == Side::Right { weapon.tile.flip = !weapon.tile.flip };
@@ -94,6 +100,7 @@ pub fn spawn_weapon(
         .insert(GlobalTransform::default())
         .insert(VisibilityBundle::default())
         .with_children(|spawn| { spawn.spawn(weapon.tile.sprite(0, 0, 0., atlas)); });
+    weapon_changed.send(WeaponChanged(side, weapon));
 }
 
 fn update_weapons(

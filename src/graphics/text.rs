@@ -84,7 +84,7 @@ fn update_texts(
     }
 }
 
-fn glyph_index(c: char) -> Option<usize> {
+pub fn glyph_index(c: char) -> Option<usize> {
     match c {
         'a'..='z' => Some(c as usize - 'a' as usize + 897),
         '!'..='_' => Some(c as usize - '!' as usize + 865),

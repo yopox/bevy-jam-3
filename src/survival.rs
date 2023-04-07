@@ -6,12 +6,12 @@ use bevy::prelude::*;
 use crate::GameState;
 use crate::graphics::background::spawn_rails;
 use crate::graphics::frame::spawn_frame;
-use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_y};
+use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
 use crate::util::{Palette, z_pos};
-use crate::weapons::{Side, spawn_weapon, Weapons};
+use crate::weapons::{Side, spawn_weapon, WeaponChanged, Weapons};
 
 pub struct SurvivalPlugin;
 
@@ -21,7 +21,7 @@ impl Plugin for SurvivalPlugin {
             .add_event::<ShipMoveEvent>()
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
-                (update_score, increase_score, update_life, keyboard_dispatcher, update_ship_image, update_ship_y)
+                (update_score, increase_score, update_life, keyboard_dispatcher, update_ship_image, update_ship_y, update_ship_name)
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -40,12 +40,13 @@ struct Life(i8);
 fn setup(
     mut commands: Commands,
     textures: Res<Textures>,
+    mut weapon_changed: EventWriter<WeaponChanged>,
 ) {
     spawn_frame(&mut commands, &textures.mrmotext);
     spawn_rails(&mut commands, &textures.mrmotext);
     spawn_ship(&mut commands, &textures.mrmotext);
-    spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext);
-    spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext);
+    spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
+    // spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
 
     commands
         .spawn(text("score[000000]", 3, 1, z_pos::GUI))

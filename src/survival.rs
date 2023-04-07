@@ -49,8 +49,14 @@ fn setup(
     spawn_rails(&mut commands, &textures.mrmotext);
     spawn_ship(&mut commands, &textures.mrmotext);
     spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::StarFly, Families::Bats, 4, 6);
-    // spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::StarFly, Families::Bats, 18, 14);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceCrab, Families::Bats, 20, 11);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::CashKnight, Families::Bats, 8, 13);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceShrimp, Families::Bats, 22, 7);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SuperEye, Families::Bats, 5, 5);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::MagicCandle, Families::Bats, 11, 5);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::Necromancer, Families::Bats, 19, 5);
+    spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
 
     commands
         .spawn(text("score[000000]", 3, 1, z_pos::GUI))

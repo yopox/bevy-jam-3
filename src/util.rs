@@ -5,6 +5,8 @@ use bevy::sprite::Anchor;
 use bevy::utils::default;
 use bevy_text_mode::{TextModeSpriteSheetBundle, TextModeTextureAtlasSprite};
 
+use crate::util::size::{HEIGHT, TILE_SIZE, WIDTH};
+
 pub mod size {
     pub const SCALE: f32 = 5.;
     pub const TILE_SIZE: f32 = 8.;
@@ -71,4 +73,9 @@ pub fn sprite(
         },
         ..default()
     }
+}
+
+pub fn is_oob(transform: &Transform) -> bool {
+    let pos = transform.translation;
+    pos.x < -8. || pos.x > (WIDTH as f32 * TILE_SIZE) + 8. || pos.y < -8. || pos.y > (HEIGHT as f32 * TILE_SIZE) + 8.
 }

@@ -3,7 +3,8 @@ use bevy::prelude::*;
 use crate::GameState;
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
-use crate::util::Palette;
+use crate::loading::Textures;
+use crate::util::{is_oob, Palette, z_pos};
 
 /// Kind of shots
 #[derive(Copy, Clone)]
@@ -48,20 +49,36 @@ impl Plugin for WeaponPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(
-                (update_weapons, shoot)
+                (update_weapons, shoot, update_shots)
                     .in_set(OnUpdate(GameState::Survival))
             );
     }
 }
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Copy, Clone)]
 pub enum Side { Left, Right }
+
+impl Side {
+    pub fn factor(&self) -> f32 {
+        match self {
+            Side::Left => 1.,
+            Side::Right => -1.,
+        }
+    }
+}
 
 #[derive(Component)]
 pub struct ActiveWeapon(Side, Weapon);
 
 #[derive(Component)]
 pub struct JustFired(u16);
+
+#[derive(Component)]
+pub struct Shot {
+    weapon: Weapon,
+    side: Side,
+    speed: Vec2,
+}
 
 pub fn spawn_weapon(
     weapon: Weapons,
@@ -79,7 +96,7 @@ pub fn spawn_weapon(
         .with_children(|spawn| { spawn.spawn(weapon.tile.sprite(0, 0, 0., atlas)); });
 }
 
-pub fn update_weapons(
+fn update_weapons(
     mut commands: Commands,
     ship: Query<&Transform, With<Ship>>,
     mut weapons: Query<(&ActiveWeapon, Option<&mut JustFired>, &mut Transform, Entity), Without<Ship>>,
@@ -97,18 +114,44 @@ pub fn update_weapons(
     }
 }
 
-pub fn shoot(
+fn shoot(
     mut commands: Commands,
     keys: Res<Input<KeyCode>>,
     weapons: Query<(&ActiveWeapon, Option<&JustFired>, &Transform, Entity)>,
+    textures: Res<Textures>,
 ) {
     for (key_code, side) in [(KeyCode::Left, Side::Left), (KeyCode::Right, Side::Right)] {
         if keys.pressed(key_code) {
             for (weapon, just_fired, pos, id) in &weapons {
                 if weapon.0 != side || just_fired.is_some() { continue }
-                // TODO: Actually shoot
                 commands.entity(id).insert(JustFired(0));
+
+                commands
+                    .spawn(Shot {
+                        weapon: weapon.1,
+                        side,
+                        speed: Vec2::new(-1., 0.),
+                    })
+                    .insert(Transform::from_xyz(
+                        if side == Side::Left { pos.translation.x - 8. } else { pos.translation.x + 8. },
+                        pos.translation.y,
+                        z_pos::SHOTS))
+                    .insert(GlobalTransform::default())
+                    .insert(VisibilityBundle::default())
+                    .with_children(|spawn| { spawn.spawn(weapon.1.shot_tile.sprite(0, 0, 0., &textures.mrmotext)); });
             }
         }
+    }
+}
+
+fn update_shots(
+    mut commands: Commands,
+    mut shots: Query<(&Shot, &mut Transform, Entity)>,
+) {
+    for (shot, mut transform, id) in shots.iter_mut() {
+        transform.translation.x += shot.speed.x * shot.side.factor();
+        transform.translation.y += shot.speed.y * shot.side.factor();
+
+        if is_oob(&transform) { commands.entity(id).despawn_recursive(); }
     }
 }

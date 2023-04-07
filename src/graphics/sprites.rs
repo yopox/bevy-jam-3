@@ -108,3 +108,12 @@ pub const SPACE_CRAB: [TILE; 12] = [
     (2, 0, 834, 0, 2, false, 0),
     (3, 0, 0, 0, 1, false, 0),
 ];
+
+pub const MAGIC_CANDLE: [TILE; 6] = [
+    (0, 1, 0, 0, 1, false, 0),
+    (1, 1, 268, 0, 3, true, 0),
+    (2, 1, 0, 0, 1, false, 0),
+    (0, 0, 777, 0, 2, true, 0),
+    (1, 0, 418, 0, 1, true, 0),
+    (2, 0, 777, 0, 2, false, 0),
+];

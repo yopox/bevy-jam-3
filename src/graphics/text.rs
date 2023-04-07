@@ -2,8 +2,8 @@ use bevy::app::App;
 use bevy::prelude::*;
 
 use crate::loading::Textures;
-use crate::util;
-use crate::util::Palette;
+use crate::MainBundle;
+use crate::util::{Palette, size, sprite};
 
 pub struct TextPlugin;
 
@@ -21,66 +21,61 @@ pub struct Text {
     pub z: f32,
     bg: Palette,
     fg: Palette,
-    children: Vec<Entity>,
 }
 
 pub fn text(text: &str, x: usize, y: usize, z: f32) -> Text {
     Text {
         text: text.to_string(),
-        x, y, z,
-        bg: Palette::Black, fg: Palette::White,
-        children: vec![],
+        x,
+        y,
+        z,
+        bg: Palette::Black,
+        fg: Palette::White,
     }
 }
 
 pub fn color_text(text: &str, x: usize, y: usize, z: f32, bg: Palette, fg: Palette) -> Text {
     Text {
         text: text.to_string(),
-        x, y, z, bg, fg,
-        children: vec![],
+        x,
+        y,
+        z,
+        bg,
+        fg,
     }
+}
+
+pub fn from_middle(text: &str, x: isize, y: isize, z: f32, bg: Palette, fg: Palette) -> Text {
+    color_text(
+        text,
+        (x - text.len() as isize / 2 + size::WIDTH as isize / 2) as usize,
+        (y + size::HEIGHT as isize / 2) as usize,
+        z, bg, fg,
+    )
 }
 
 fn update_texts(
     mut commands: Commands,
-    mut texts: ParamSet<(
-        Query<(Ref<Text>, Entity)>,
-        Query<&mut Text>,
-    )>,
+    mut texts: Query<(&mut Text, Entity), Or<(Changed<Text>, Added<Text>)>>,
     textures: Option<Res<Textures>>,
 ) {
-    let Some(textures) = textures else { return };
+    let Some(textures) = textures else { return; };
 
-    let mut to_update = vec![];
-    for (text, id) in &texts.p0() {
-        if text.is_changed() {
-            to_update.push(id.clone());
-        }
-    }
+    for (mut text, e) in texts.iter_mut() {
+        commands.entity(e).despawn_descendants();
+        commands.entity(e).clear_children();
+        commands.entity(e).insert(MainBundle::from_tiles(text.x, text.y, text.z));
 
-    let mut query = texts.p1();
-    for id in &to_update {
-        let mut text = query.get_mut(*id).unwrap();
-
-        for child in &text.children {
-            commands.entity(*child).despawn();
-        }
-        text.children.clear();
-
-        let mut spawned_entities = vec![];
         for (i, char) in text.text.chars().enumerate() {
-            spawned_entities.push(commands.spawn(
-                util::sprite(
-                    glyph_index(char).unwrap_or(0),
-                    text.x + i, text.y, text.z,
-                    text.bg, text.fg,
-                    false, 0,
-                    textures.mrmotext.clone()
-                )
-            ).id());
+            let child = commands.spawn(sprite(
+                glyph_index(char).unwrap_or(0),
+                i, 0, 0.,
+                text.bg, text.fg,
+                false, 0,
+                textures.mrmotext.clone(),
+            )).id();
+            commands.entity(e).add_child(child);
         }
-
-        text.children.append(&mut spawned_entities);
     }
 }
 

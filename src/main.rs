@@ -4,6 +4,7 @@ use bevy_text_mode::TextModePlugin;
 use crate::graphics::GraphicsPlugin;
 use crate::loading::LoadingPlugin;
 use crate::survival::SurvivalPlugin;
+use crate::title::TitlePlugin;
 use crate::util::size;
 use crate::util::size::tile_to_f32;
 use crate::weapons::WeaponPlugin;
@@ -13,6 +14,7 @@ mod loading;
 mod graphics;
 mod survival;
 mod weapons;
+mod title;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum GameState {
@@ -46,6 +48,7 @@ fn main() {
         .add_plugin(LoadingPlugin)
         .add_plugin(SurvivalPlugin)
         .add_plugin(WeaponPlugin)
+        .add_plugin(TitlePlugin)
         .add_startup_system(init)
         .run();
 }
@@ -77,5 +80,9 @@ impl MainBundle {
             transform: Transform::from_xyz(x, y, z),
             ..default()
         }
+    }
+
+    pub fn from_tiles(x: usize, y: usize, z: f32) -> Self {
+        Self::from_xyz(tile_to_f32(x), tile_to_f32(y), z)
     }
 }

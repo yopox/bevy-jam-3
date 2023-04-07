@@ -81,3 +81,15 @@ pub const SPACE_SHRIMP: [TILE; 9] = [
     (1, 0, 701, 0, 2, false, 0),
     (2, 0, 0, 0, 1, false, 0),
 ];
+
+pub const CASH_KNIGHT: [TILE; 9] = [
+    (0, 2, 0, 0, 1, false, 0),
+    (1, 2, 939, 0, 2, false, 0),
+    (2, 2, 0, 0, 1, false, 0),
+    (0, 1, 868, 0, 2, false, 0),
+    (1, 1, 228, 0, 1, false, 0),
+    (2, 1, 941, 0, 2, false, 1),
+    (0, 0, 343, 0, 1, true, 0),
+    (1, 0, 206, 0, 1, false, 0),
+    (2, 0, 343, 0, 1, false, 0),
+];

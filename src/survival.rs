@@ -37,6 +37,9 @@ struct Score(i64);
 #[derive(Component)]
 struct Life(i8);
 
+const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
+
+
 fn setup(
     mut commands: Commands,
     textures: Res<Textures>,
@@ -56,7 +59,7 @@ fn setup(
         .spawn(text("life[", 18, 1, z_pos::GUI))
         .insert(SurvivalUI);
     commands
-        .spawn(color_text("****", 23, 1, z_pos::GUI, Palette::BLACK, Palette::RED))
+        .spawn(color_text(LIFE_TEXTS[5], 23, 1, z_pos::GUI, Palette::Black, Palette::Red))
         .insert(Life(5))
         .insert(SurvivalUI);
     commands
@@ -79,8 +82,6 @@ fn update_score(
         text.text = format!("score:[{:0>6}]", score / 100)
     }
 }
-
-const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
 
 fn update_life(
     mut query: Query<(&mut text::Text, &Life), Changed<Life>>,

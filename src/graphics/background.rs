@@ -12,7 +12,7 @@ pub fn spawn_rails(
             commands.spawn(
                 util::sprite(
                     if rand::random::<f32>() < 0.1 { 299 } else { 331 }, x + 15, y, z_pos::RAILS,
-                    Palette::TRANSPARENT, Palette::GRAY,
+                    Palette::Transparent, Palette::Gray,
                     x == 1, 0,
                     atlas.clone(),
                 )

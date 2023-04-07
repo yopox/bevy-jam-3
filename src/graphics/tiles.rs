@@ -17,7 +17,7 @@ impl Tile {
     pub fn new(index: usize, flip: bool, rotation: u8) -> Self {
         Tile {
             index,
-            bg: Palette::TRANSPARENT, fg: Palette::TRANSPARENT,
+            bg: Palette::Transparent, fg: Palette::Transparent,
             flip, rotation
         }
     }
@@ -25,7 +25,7 @@ impl Tile {
     pub fn from_index(index: usize) -> Self {
         Tile {
             index,
-            bg: Palette::TRANSPARENT, fg: Palette::TRANSPARENT,
+            bg: Palette::Transparent, fg: Palette::Transparent,
             flip: false, rotation: 0
         }
     }

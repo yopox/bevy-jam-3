@@ -6,7 +6,7 @@ use crate::util::{Palette, size, z_pos};
 
 pub fn spawn_frame(
     commands: &mut Commands,
-    atlas: &Handle<TextureAtlas>
+    atlas: &Handle<TextureAtlas>,
 ) {
     for y in 0..size::HEIGHT {
         for x in 0..size::WIDTH {
@@ -14,7 +14,7 @@ pub fn spawn_frame(
                 commands.spawn(
                     util::sprite(
                         0, x, y, z_pos::FRAME,
-                        Palette::BLACK, Palette::BLACK,
+                        Palette::Black, Palette::Black,
                         false, 0,
                         atlas.clone(),
                     )
@@ -30,8 +30,8 @@ pub fn spawn_frame(
         (size::WIDTH - 3, 3, 1),
     ] {
         commands.spawn(util::sprite(
-            223, x, y, z_pos::FRAME, Palette::BLACK, Palette::TRANSPARENT,
-            false, rotation, atlas.clone()
+            223, x, y, z_pos::FRAME, Palette::Black, Palette::Transparent,
+            false, rotation, atlas.clone(),
         ));
     }
 }

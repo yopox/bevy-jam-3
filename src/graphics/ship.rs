@@ -27,10 +27,10 @@ pub fn spawn_ship(
     atlas: &Handle<TextureAtlas>,
 ) {
     let colors = [
-        Palette::TRANSPARENT,
-        Palette::DARK_BLUE,
-        Palette::BLACK,
-        Palette::WHITE,
+        Palette::Transparent,
+        Palette::DarkBlue,
+        Palette::Black,
+        Palette::White,
     ];
     commands
         .spawn(Ship { y: 0 })
@@ -110,7 +110,7 @@ pub fn update_ship_name(
     mut weapon_changed: EventReader<WeaponChanged>,
     mut ship_char: Query<(&mut TextModeTextureAtlasSprite, &ShipChar)>,
 ) {
-    for (WeaponChanged(side, weapon)) in weapon_changed.iter() {
+    for WeaponChanged(side, weapon) in weapon_changed.iter() {
         ship_char.for_each_mut(|(mut sprite, ship_char)| {
             if ship_char.0 == *side { sprite.index = glyph_index(weapon.name).expect("Couldn't find weapon name glyph index.") }
         })

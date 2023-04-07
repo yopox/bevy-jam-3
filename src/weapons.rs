@@ -36,8 +36,8 @@ impl Into<Weapon> for Weapons {
         match self {
             Weapons::Finger => Weapon {
                 shots: Shots::Simple,
-                tile: Tiles::LeftHand.to_tile().with_fg(Palette::DARK_GRAY),
-                shot_tile: Tiles::Dash.to_tile().with_fg(Palette::DARK_GRAY),
+                tile: Tiles::LeftHand.to_tile().with_fg(Palette::DarkGray),
+                shot_tile: Tiles::Dash.to_tile().with_fg(Palette::DarkGray),
                 cooldown: 40,
                 name: 'f',
             }
@@ -130,7 +130,7 @@ fn shoot(
     for (key_code, side) in [(KeyCode::Left, Side::Left), (KeyCode::Right, Side::Right)] {
         if keys.pressed(key_code) {
             for (weapon, just_fired, pos, id) in &weapons {
-                if weapon.0 != side || just_fired.is_some() { continue }
+                if weapon.0 != side || just_fired.is_some() { continue; }
                 commands.entity(id).insert(JustFired(0));
 
                 commands

@@ -28,7 +28,7 @@ pub fn text(text: &str, x: usize, y: usize, z: f32) -> Text {
     Text {
         text: text.to_string(),
         x, y, z,
-        bg: Palette::BLACK, fg: Palette::WHITE,
+        bg: Palette::Black, fg: Palette::White,
         children: vec![],
     }
 }

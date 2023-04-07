@@ -36,17 +36,19 @@ pub enum Palette {
     DarkGray,
     Red,
     DarkBlue,
+    Gold,
     Transparent,
 }
 
 lazy_static! {
-    static ref COLOR_OF_PALETTE: [Color; 7] = [
+    static ref COLOR_OF_PALETTE: [Color; 8] = [
         Color::hex("#000000").unwrap(),
         Color::hex("#ffffff").unwrap(),
         Color::hex("#808080").unwrap(),
         Color::hex("#404040").unwrap(),
         Color::hex("#ff4500").unwrap(),
         Color::hex("#344866").unwrap(),
+        Color::hex("#ffd700").unwrap(),
         Color::hex("#00000000").unwrap(),
     ];
 }

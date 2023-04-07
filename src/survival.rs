@@ -37,7 +37,7 @@ struct Score(i64);
 #[derive(Component)]
 struct Life(i8);
 
-const LIFE_TEXTS: [&str; 6] = ["", "*", "**", "***", "****", "*****"];
+const LIFE_TEXTS: [&str; 6] = ["°°°°°", "•°°°°", "••°°°", "•••°°", "••••°", "•••••"];
 
 
 fn setup(
@@ -67,7 +67,7 @@ fn setup(
         .insert(SurvivalUI);
     commands
         .spawn(color_text(LIFE_TEXTS[5], 23, 1, z_pos::GUI, Palette::Black, Palette::Red))
-        .insert(Life(5))
+        .insert(Life(2))
         .insert(SurvivalUI);
     commands
         .spawn(text("]", 28, 1, z_pos::GUI))

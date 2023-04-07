@@ -89,7 +89,11 @@ pub fn is_oob(transform: &Transform) -> bool {
     pos.x < -8. || pos.x > tile_to_f32(size::WIDTH) + 8. || pos.y < -8. || pos.y > tile_to_f32(size::HEIGHT) + 8.
 }
 
-pub const SHIP_SPEED: f32 = 0.3;
-pub const SHIP_INIT_Y: f32 = size::HEIGHT as f32 * size::TILE_SIZE / 2. - 16.;
-pub const SHIP_MAX_Y: i64 = 190;
-pub const SHIP_MIN_Y: i64 = -170;
+pub mod ship {
+    use crate::util::size;
+
+    pub const SPEED: f32 = 0.3;
+    pub const INIT_Y: f32 = size::HEIGHT as f32 * size::TILE_SIZE / 2. - 16.;
+    pub const MAX_Y: i64 = 190;
+    pub const MIN_Y: i64 = -170;
+}

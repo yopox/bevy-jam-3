@@ -1,6 +1,5 @@
 use std::cmp::{max, min};
 
-use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 
 use crate::GameState;
@@ -22,7 +21,7 @@ impl Plugin for SurvivalPlugin {
             .add_event::<ShipMoveEvent>()
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
-                (update_score, increase_score, update_life, keyboard_dispatcher, update_ship_image, update_ship_y, update_ship_name)
+                (update_score, increase_score, update_life, update_ship_image, update_ship_y, update_ship_name)
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -94,24 +93,4 @@ fn update_life(
     }
 }
 
-pub fn keyboard_dispatcher(
-    mut event_reader: EventReader<KeyboardInput>,
-    mut ship_event_writer: EventWriter<ShipMoveEvent>,
-) {
-    let mut ship_moved = 0;
-    for event in event_reader.iter() {
-        match event.key_code {
-            Some(KeyCode::Up) => ship_moved += 1,
-            Some(KeyCode::Down) => ship_moved -= 1,
-            _ => ()
-        }
-    }
-    if ship_moved != 0 {
-        ship_event_writer.send(ShipMoveEvent(ship_moved));
-    }
-}
-
-fn cleanup(
-) {
-
-}
+fn cleanup() {}

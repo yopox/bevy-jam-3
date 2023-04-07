@@ -24,7 +24,7 @@ enum GameState {
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::hex("ffffff").unwrap()))
+        .insert_resource(ClearColor(Color::WHITE))
         .add_plugins(DefaultPlugins
             .set(ImagePlugin::default_nearest())
             .set(WindowPlugin {

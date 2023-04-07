@@ -10,7 +10,7 @@ use crate::util::size::tile_to_f32;
 
 pub mod size {
     pub const SCALE: f32 = 5.;
-    pub const TILE_SIZE: f32 = 8.;
+    pub(in crate::util) const TILE_SIZE: f32 = 8.;
     pub const WIDTH: usize = 32;
     pub const HEIGHT: usize = 18;
 

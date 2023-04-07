@@ -1,9 +1,10 @@
 use std::cmp::{max, min};
+
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 
 use crate::GameState;
-use crate::graphics::background::spawn_chains;
+use crate::graphics::background::spawn_rails;
 use crate::graphics::frame::spawn_frame;
 use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_y};
 use crate::graphics::text;
@@ -41,7 +42,7 @@ fn setup(
     textures: Res<Textures>,
 ) {
     spawn_frame(&mut commands, &textures.mrmotext);
-    spawn_chains(&mut commands, &textures.mrmotext);
+    spawn_rails(&mut commands, &textures.mrmotext);
     spawn_ship(&mut commands, &textures.mrmotext);
     spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext);
     spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext);

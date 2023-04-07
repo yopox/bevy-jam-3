@@ -18,7 +18,7 @@ pub mod z_pos {
     pub const BACKGROUND: f32 = 0.;
     pub const ENEMIES: f32 = 2.;
     pub const SHOTS: f32 = 4.;
-    pub const CHAINS: f32 = 6.;
+    pub const RAILS: f32 = 6.;
     pub const MACHINE: f32 = 8.;
     pub const FRAME: f32 = 10.;
     pub const GUI: f32 = 12.;
@@ -29,6 +29,7 @@ pub enum Palette {
     BLACK,
     WHITE,
     GRAY,
+    DARK_GRAY,
     RED,
     DARK_BLUE,
     TRANSPARENT,
@@ -41,6 +42,7 @@ impl Palette {
             Palette::BLACK => Color::hex("#000000"),
             Palette::WHITE => Color::hex("#ffffff"),
             Palette::GRAY => Color::hex("#808080"),
+            Palette::DARK_GRAY => Color::hex("#404040"),
             Palette::RED => Color::hex("#ff4500"),
             Palette::DARK_BLUE => Color::hex("#151a2d"),
             Palette::TRANSPARENT => Color::hex("#00000000"),

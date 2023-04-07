@@ -10,6 +10,7 @@ use crate::util::size::tile_to_f32;
 
 pub enum Monsters {
     StarFly,
+    SpaceShrimp,
     SuperEye,
 }
 
@@ -17,6 +18,7 @@ impl Monsters {
     fn sprite(&self) -> &[TILE] {
         match self {
             Monsters::StarFly => &sprites::STAR_FLY,
+            Monsters::SpaceShrimp => &sprites::SPACE_SHRIMP,
             Monsters::SuperEye => &sprites::SUPER_EYE,
         }
     }
@@ -24,6 +26,7 @@ impl Monsters {
     fn palette(&self) -> Vec<Palette> {
         match self {
             Monsters::StarFly => vec![Palette::Transparent, Palette::Black, Palette::DarkBlue],
+            Monsters::SpaceShrimp => vec![Palette::Transparent, Palette::Black, Palette::DarkGray],
             Monsters::SuperEye => vec![Palette::Transparent, Palette::Black, Palette::Gray],
         }
     }

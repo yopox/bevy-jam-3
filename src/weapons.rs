@@ -35,8 +35,8 @@ impl Into<Weapon> for Weapons {
         match self {
             Weapons::Finger => Weapon {
                 shots: Shots::Simple,
-                tile: Tiles::LeftHand.to_tile().with_fg(Palette::BLACK),
-                shot_tile: Tiles::Dash.to_tile().with_fg(Palette::BLACK),
+                tile: Tiles::LeftHand.to_tile().with_fg(Palette::DARK_GRAY),
+                shot_tile: Tiles::Dash.to_tile().with_fg(Palette::DARK_GRAY),
                 cooldown: 40,
             }
         }

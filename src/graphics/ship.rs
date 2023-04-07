@@ -23,7 +23,7 @@ pub fn spawn_ship(
     let colors = [
         Palette::TRANSPARENT,
         Palette::DARK_BLUE,
-        Palette::RED,
+        Palette::BLACK,
     ];
     commands
         .spawn(Ship { y: 0 })
@@ -40,26 +40,26 @@ pub fn spawn_ship(
         .with_children(|builder| {
             for (x, y, i, bg, fg, flip, rotation) in
             [
-                (0, 4, 150, 0, 1, false, 0),
-                (1, 4, 604, 0, 2, false, 0),
-                (2, 4, 604, 0, 2, true, 0),
-                (3, 4, 150, 0, 1, true, 0),
-                (0, 3, 337, 0, 1, false, 0),
-                (1, 3, 0, 1, 1, false, 0),
-                (2, 3, 0, 1, 1, false, 0),
-                (3, 3, 337, 0, 1, false, 2),
+                (0, 4, 0, 0, 1, false, 0),
+                (1, 4, 1010, 0, 2, false, 0),
+                (2, 4, 1010, 0, 2, true, 0),
+                (3, 4, 0, 0, 1, false, 0),
+                (0, 3, 62, 1, 0, false, 2),
+                (1, 3, 605, 0, 1, true, 0),
+                (2, 3, 605, 0, 1, false, 0),
+                (3, 3, 62, 1, 0, true, 2),
                 (0, 2, 337, 0, 1, false, 0),
-                (1, 2, 0, 1, 1, false, 0),
-                (2, 2, 0, 1, 1, false, 0),
-                (3, 2, 337, 0, 1, false, 2),
-                (0, 1, 337, 0, 1, false, 0),
-                (1, 1, 0, 1, 1, false, 0),
-                (2, 1, 0, 1, 1, false, 0),
-                (3, 1, 337, 0, 1, false, 2),
-                (0, 0, 150, 0, 1, true, 2),
-                (1, 0, 604, 0, 2, true, 2),
-                (2, 0, 604, 0, 2, false, 2),
-                (3, 0, 150, 0, 1, false, 2),
+                (1, 2, 0, 1, 0, true, 2),
+                (2, 2, 0, 1, 0, true, 2),
+                (3, 2, 337, 0, 1, true, 0),
+                (0, 1, 62, 1, 0, true, 0),
+                (1, 1, 605, 0, 1, false, 2),
+                (2, 1, 605, 0, 1, true, 2),
+                (3, 1, 62, 1, 0, false, 0),
+                (0, 0, 0, 0, 1, false, 0),
+                (1, 0, 1010, 0, 2, true, 2),
+                (2, 0, 1010, 0, 2, false, 2),
+                (3, 0, 0, 0, 1, false, 0),
             ] {
                 builder.spawn(
                     util::sprite(

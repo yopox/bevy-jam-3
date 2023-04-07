@@ -44,7 +44,7 @@ impl Palette {
             Palette::GRAY => Color::hex("#808080"),
             Palette::DARK_GRAY => Color::hex("#404040"),
             Palette::RED => Color::hex("#ff4500"),
-            Palette::DARK_BLUE => Color::hex("#151a2d"),
+            Palette::DARK_BLUE => Color::hex("#344866"),
             Palette::TRANSPARENT => Color::hex("#00000000"),
         }.unwrap()
     }

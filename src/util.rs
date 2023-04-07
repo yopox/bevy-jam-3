@@ -6,11 +6,16 @@ use bevy::utils::default;
 use bevy_text_mode::{TextModeSpriteSheetBundle, TextModeTextureAtlasSprite};
 use lazy_static::lazy_static;
 
+use crate::util::size::tile_to_f32;
+
 pub mod size {
     pub const SCALE: f32 = 5.;
     pub const TILE_SIZE: f32 = 8.;
     pub const WIDTH: usize = 32;
     pub const HEIGHT: usize = 18;
+
+    /// Returns world coordinates for a tile, for instance `2` -> `2 as f32 * TILE_SIZE`.
+    pub fn tile_to_f32(tile: usize) -> f32 { tile as f32 * TILE_SIZE }
 }
 
 pub mod z_pos {
@@ -72,7 +77,7 @@ pub fn sprite(
         },
         texture_atlas: atlas,
         transform: Transform {
-            translation: Vec3::new(x as f32 * size::TILE_SIZE, y as f32 * size::TILE_SIZE, z),
+            translation: Vec3::new(tile_to_f32(x), tile_to_f32(y) , z),
             ..default()
         },
         ..default()
@@ -81,7 +86,7 @@ pub fn sprite(
 
 pub fn is_oob(transform: &Transform) -> bool {
     let pos = transform.translation;
-    pos.x < -8. || pos.x > (size::WIDTH as f32 * size::TILE_SIZE) + 8. || pos.y < -8. || pos.y > (size::HEIGHT as f32 * size::TILE_SIZE) + 8.
+    pos.x < -8. || pos.x > tile_to_f32(size::WIDTH) + 8. || pos.y < -8. || pos.y > tile_to_f32(size::HEIGHT) + 8.
 }
 
 pub const SHIP_SPEED: f32 = 0.3;

@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 use bevy_text_mode::TextModeTextureAtlasSprite;
 
+use crate::{MainBundle, util};
+use crate::graphics::sprites;
 use crate::graphics::text::glyph_index;
-use crate::util;
 use crate::util::{Palette, size, z_pos};
+use crate::util::size::tile_to_f32;
 use crate::weapons::{Side, WeaponChanged};
 
 const SHIP_SPEED: i64 = 3;
@@ -34,40 +36,13 @@ pub fn spawn_ship(
     ];
     commands
         .spawn(Ship { y: 0 })
-        .insert(Transform {
-            translation: Vec3::new(
-                size::WIDTH as f32 * size::TILE_SIZE / 2. - 16.,
-                SHIP_INIT_Y,
-                z_pos::MACHINE,
-            ),
-            ..default()
-        })
-        .insert(GlobalTransform::default())
-        .insert(VisibilityBundle::default())
+        .insert(MainBundle::from_xyz(
+            tile_to_f32(size::WIDTH) / 2. - 16.,
+            SHIP_INIT_Y,
+            z_pos::MACHINE,
+        ))
         .with_children(|builder| {
-            for (x, y, i, bg, fg, flip, rotation) in
-            [
-                (0, 4, 0, 0, 1, false, 0),
-                (1, 4, 1010, 0, 2, false, 0),
-                (2, 4, 1010, 0, 2, true, 0),
-                (3, 4, 0, 0, 1, false, 0),
-                (0, 3, 62, 1, 0, false, 2),
-                (1, 3, 605, 0, 1, true, 0),
-                (2, 3, 605, 0, 1, false, 0),
-                (3, 3, 62, 1, 0, true, 2),
-                (0, 2, 337, 0, 1, false, 0),
-                (1, 2, 510, 1, 3, false, 0),
-                (2, 2, 510, 1, 3, true, 0),
-                (3, 2, 337, 0, 1, true, 0),
-                (0, 1, 62, 1, 0, true, 0),
-                (1, 1, 605, 0, 1, false, 2),
-                (2, 1, 605, 0, 1, true, 2),
-                (3, 1, 62, 1, 0, false, 0),
-                (0, 0, 0, 0, 1, false, 0),
-                (1, 0, 1010, 0, 2, true, 2),
-                (2, 0, 1010, 0, 2, false, 2),
-                (3, 0, 0, 0, 1, false, 0),
-            ] {
+            for (x, y, i, bg, fg, flip, rotation) in sprites::SHIP {
                 let mut commands = builder.spawn(
                     util::sprite(
                         i, x, y, 0.,

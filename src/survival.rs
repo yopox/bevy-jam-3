@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use crate::GameState;
 use crate::graphics::background::spawn_rails;
 use crate::graphics::frame::spawn_frame;
+use crate::graphics::monsters::{Families, Monsters, spawn_monster};
 use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
@@ -49,6 +50,7 @@ fn setup(
     spawn_rails(&mut commands, &textures.mrmotext);
     spawn_ship(&mut commands, &textures.mrmotext);
     spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::StarFly, Families::Bats, 4, 6);
     // spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
 
     commands

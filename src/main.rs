@@ -5,6 +5,7 @@ use crate::graphics::GraphicsPlugin;
 use crate::loading::LoadingPlugin;
 use crate::survival::SurvivalPlugin;
 use crate::util::size;
+use crate::util::size::tile_to_f32;
 use crate::weapons::WeaponPlugin;
 
 mod util;
@@ -29,8 +30,8 @@ fn main() {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     resolution: (
-                        size::SCALE * size::TILE_SIZE * size::WIDTH as f32,
-                        size::SCALE * size::TILE_SIZE * size::HEIGHT as f32
+                        size::SCALE * tile_to_f32(size::WIDTH),
+                        size::SCALE * tile_to_f32(size::HEIGHT),
                     ).into(),
                     title: "bevy-jam-3".to_string(),
                     canvas: Some("#bevy".to_owned()),
@@ -54,11 +55,27 @@ fn init(mut commands: Commands) {
         transform: Transform {
             scale: Vec3::new(1. / size::SCALE, 1. / size::SCALE, 1.),
             translation: Vec3::new(
-                size::WIDTH as f32 * size::TILE_SIZE / 2.,
-                size::HEIGHT as f32 * size::TILE_SIZE / 2.,
+                tile_to_f32(size::WIDTH) / 2.,
+                tile_to_f32(size::HEIGHT) / 2.,
                 100.),
             ..Default::default()
         },
         ..Default::default()
     });
+}
+
+#[derive(Bundle, Debug, Default)]
+pub struct MainBundle {
+    pub transform: Transform,
+    pub global_transform: GlobalTransform,
+    pub visibility: VisibilityBundle,
+}
+
+impl MainBundle {
+    pub fn from_xyz(x: f32, y: f32, z: f32) -> Self {
+        MainBundle {
+            transform: Transform::from_xyz(x, y, z),
+            ..default()
+        }
+    }
 }

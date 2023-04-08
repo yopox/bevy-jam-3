@@ -80,7 +80,8 @@ impl Hitbox {
             // Empty tile, transparent: no hitbox
             (0, true) => None,
             // Enemy details, no hitbox
-            (619, _) | (268, _) | (487, _) | (777, _) | (967, _) => None,
+            (619, _) | (268, _) | (487, _) | (777, _) | (967, _)
+            | (463, _) | (397, _) | (643, _) => None,
             // Default case: whole box
             _ => Some(Hitbox { width: 8.0, height: 8.0, ..default() }),
         }

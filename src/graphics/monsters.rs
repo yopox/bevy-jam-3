@@ -14,6 +14,7 @@ use crate::util::size::tile_to_f32;
 pub enum Monsters {
     CashKnight,
     MagicCandle,
+    MrCactus,
     Necromancer,
     StarFly,
     SpaceCrab,
@@ -26,6 +27,7 @@ impl Monsters {
         match self {
             Monsters::CashKnight => &sprites::CASH_KNIGHT,
             Monsters::MagicCandle => &sprites::MAGIC_CANDLE,
+            Monsters::MrCactus => &sprites::MR_CACTUS,
             Monsters::Necromancer => &sprites::NECROMANCER,
             Monsters::StarFly => &sprites::STAR_FLY,
             Monsters::SpaceCrab => &sprites::SPACE_CRAB,
@@ -38,6 +40,7 @@ impl Monsters {
         match self {
             Monsters::CashKnight => vec![Palette::Transparent, Palette::Black, Palette::Gold],
             Monsters::MagicCandle => vec![Palette::Transparent, Palette::Black, Palette::LightGold, Palette::Red],
+            Monsters::MrCactus => sprites::RTEMO_PALETTE.iter().map(|p| *p).collect::<Vec<Palette>>(),
             Monsters::Necromancer => vec![Palette::Transparent, Palette::Black, Palette::LightGold],
             Monsters::StarFly => vec![Palette::Transparent, Palette::Black, Palette::Black],
             Monsters::SpaceCrab => vec![Palette::Transparent, Palette::Black, Palette::Lava],

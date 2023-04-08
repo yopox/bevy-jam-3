@@ -1,3 +1,5 @@
+use crate::util::Palette;
+
 pub type X = usize;
 pub type Y = usize;
 pub type INDEX = usize;
@@ -128,4 +130,40 @@ pub const NECROMANCER: [TILE; 9] = [
     (0, 0, 0, 0, 1, false, 0),
     (1, 0, 367, 0, 1, false, 1),
     (2, 0, 0, 0, 1, false, 0),
+];
+
+pub const RTEMO_PALETTE: [Palette; 18] = [
+    Palette::Transparent,
+    Palette::Black,
+    Palette::Lava,
+    Palette::Gravel,
+    Palette::Rock,
+    Palette::Dark,
+    Palette::Blue,
+    Palette::LightBlue,
+    Palette::Gold,
+    Palette::LightGold,
+    Palette::Purple,
+    Palette::LightPurple,
+    Palette::Cactus,
+    Palette::LightCactus,
+    Palette::Terracotta,
+    Palette::LightTerracotta,
+    Palette::Red,
+    Palette::LightRed,
+];
+
+pub const MR_CACTUS: [TILE; 12] = [
+    (0, 3, 0, 0, 12, false, 1),
+    (1, 3, 463, 0, 13, false, 0),
+    (2, 3, 0, 0, 12, true, 0),
+    (0, 2, 397, 0, 1, false, 2),
+    (1, 2, 354, 0, 12, false, 0),
+    (2, 2, 643, 0, 1, true, 3),
+    (0, 1, 39, 0, 12, false, 3),
+    (1, 1, 142, 12, 1, false, 0),
+    (2, 1, 37, 0, 12, false, 0),
+    (0, 0, 0, 0, 1, false, 0),
+    (1, 0, 258, 0, 12, false, 0),
+    (2, 0, 0, 0, 12, true, 0),
 ];

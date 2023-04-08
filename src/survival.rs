@@ -56,6 +56,7 @@ fn setup(
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::SuperEye, Families::Pharaoh, 5, 5);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::MagicCandle, Families::Color(Palette::Cactus), 11, 5);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::Necromancer, Families::Color(Palette::Red), 26, 5);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::MrCactus, Families::Color(Palette::Red), 5, 11);
     spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
 
     commands

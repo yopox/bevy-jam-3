@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 use strum_macros::EnumIter;
 
-use crate::collision::{BodyType, Hitbox, SolidBody};
 use crate::GameState;
+use crate::collision::{BodyType, Hitbox, SolidBody};
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
 use crate::util::{is_oob, Palette, z_pos};
+use crate::util::size::tile_to_f32;
 
 /// Kind of shots
 #[derive(Copy, Clone)]
@@ -115,7 +116,7 @@ fn update_weapons(
 
     for (weapon, just_fired, mut pos, id) in weapons.iter_mut() {
         pos.translation.y = ship_pos.y + 16.;
-        pos.translation.x = ship_pos.x + if weapon.0 == Side::Left { -8. } else { 32. };
+        pos.translation.x = ship_pos.x + if weapon.0 == Side::Left { -tile_to_f32(1) } else { tile_to_f32(4) };
         if let Some(mut just_fired) = just_fired {
             if just_fired.0 <= weapon.1.cooldown / 2 { pos.translation.x += if weapon.0 == Side::Left { 1. } else { -1. }; }
             just_fired.0 += 1;
@@ -143,15 +144,15 @@ fn shoot(
                         speed: Vec2::new(-1., 0.),
                     })
                     .insert(Transform::from_xyz(
-                        if side == Side::Left { pos.translation.x - 8. } else { pos.translation.x + 8. },
+                        if side == Side::Left { pos.translation.x - tile_to_f32(1) } else { pos.translation.x + tile_to_f32(1) },
                         pos.translation.y,
                         z_pos::SHOTS))
                     .insert(GlobalTransform::default())
                     .insert(VisibilityBundle::default())
                     .insert(SolidBody {
                         body_type: BodyType::ShipShot,
-                        width: 8.0,
-                        height: 8.0,
+                        width: tile_to_f32(1),
+                        height: tile_to_f32(1),
                     })
                     .with_children(|spawn| {
                         let tile = weapon.1.shot_tile;

@@ -101,7 +101,6 @@ pub fn update_invincible(
 }
 
 pub fn collide(
-    mut commands: Commands,
     colliders: Query<(&SolidBody, &Transform, Entity), Without<Invincible>>,
     children_query: Query<&Children>,
     hitboxes: Query<(&Hitbox, &Transform), Without<SolidBody>>,

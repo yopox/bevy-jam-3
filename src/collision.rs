@@ -77,11 +77,12 @@ impl Hitbox {
         match (index, transparent_bg) {
             // Dash: full width, 1px height, 4px dy
             (877, _) => Some(Hitbox { width: 8.0, height: 1.0, dy: 4.0, ..default() }),
-            // Transparent: no hitbox
+            // Empty tile, transparent: no hitbox
             (0, true) => None,
+            // Enemy details, no hitbox
+            (619, _) | (268, _) | (487, _) | (777, _) | (967, _) => None,
             // Default case: whole box
             _ => Some(Hitbox { width: 8.0, height: 8.0, ..default() }),
-            // _ => None,
         }
     }
 

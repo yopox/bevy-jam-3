@@ -57,7 +57,7 @@ impl BodyType {
     }
 }
 
-pub struct Contact((BodyType, Entity), (BodyType, Entity));
+pub struct Contact(pub (BodyType, Entity), pub (BodyType, Entity));
 
 /// Excludes the entity from collision detection.
 #[derive(Component)]

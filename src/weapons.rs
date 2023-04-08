@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use strum_macros::EnumIter;
 
+use crate::collision::{BodyType, Contact, Hitbox, SolidBody};
 use crate::GameState;
-use crate::collision::{BodyType, Hitbox, SolidBody};
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
@@ -14,10 +14,23 @@ use crate::util::size::tile_to_f32;
 pub enum Shots {
     /// Straight line, 1 tile
     Simple,
+    /// Straight shot, pierces through enemies
+    Piercing,
     /// 2 shots, diagonal (45 deg)
     Double,
     /// Fill line (until obstacle) + follow player
     Laser,
+}
+
+impl Shots {
+    fn destroy_on_contact(&self) -> bool {
+        match self {
+            Shots::Simple => true,
+            Shots::Piercing => false,
+            Shots::Double => true,
+            Shots::Laser => false,
+        }
+    }
 }
 
 /// Weapon description (left orientation)
@@ -56,7 +69,7 @@ impl Plugin for WeaponPlugin {
         app
             .add_event::<WeaponChanged>()
             .add_systems(
-                (update_weapons, shoot, update_shots)
+                (update_weapons, shoot, update_shots, collide_shot)
                     .in_set(OnUpdate(GameState::Survival))
             );
     }
@@ -176,5 +189,25 @@ fn update_shots(
         transform.translation.y += shot.speed.y * shot.side.factor();
 
         if is_oob(&transform) { commands.entity(id).despawn_recursive(); }
+    }
+}
+
+fn collide_shot(
+    mut commands: Commands,
+    mut contact: EventReader<Contact>,
+    shot_info: Query<&Shot>,
+) {
+    for Contact((body1, id1), (body2, id2)) in contact.iter() {
+        destroy_shot(&mut commands, &shot_info, body1, id1, body2);
+        destroy_shot(&mut commands, &shot_info, body2, id2, body1);
+    }
+}
+
+fn destroy_shot(commands: &mut Commands, shot_info: &Query<&Shot>, body1: &BodyType, id1: &Entity, body2: &BodyType) {
+    if *body1 == BodyType::ShipShot && *body2 == BodyType::Enemy {
+        let Ok(shot) = shot_info.get(*id1) else { return };
+        if shot.weapon.shots.destroy_on_contact() {
+            commands.entity(*id1).despawn_recursive();
+        }
     }
 }

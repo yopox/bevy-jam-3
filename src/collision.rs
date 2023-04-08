@@ -12,6 +12,13 @@ use crate::graphics::sprites::TILE;
 use crate::util::{fight, Palette, size};
 use crate::weapons::{Weapon, Weapons};
 
+/// Handles collisions.
+///
+/// In order to get a collision we need:
+/// - [SolidBody] on the parent with its size (translation + size / 2. = center)
+/// - [Hitbox] on the children entities
+/// A [Contact] event will be sent after the collision.
+/// To pause collisions momentarily, add an [Invincible] component with the desired cooldown.
 pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {

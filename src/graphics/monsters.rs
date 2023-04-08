@@ -1,13 +1,16 @@
 use bevy::asset::Handle;
 use bevy::prelude::{BuildChildren, Commands, Entity};
 use bevy::sprite::TextureAtlas;
+use strum_macros::EnumIter;
 
 use crate::{MainBundle, util};
+use crate::collision::Hitbox;
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
 use crate::util::{Palette, z_pos};
 use crate::util::size::tile_to_f32;
 
+#[derive(Debug, EnumIter)]
 pub enum Monsters {
     CashKnight,
     MagicCandle,
@@ -19,7 +22,7 @@ pub enum Monsters {
 }
 
 impl Monsters {
-    fn sprite(&self) -> &[TILE] {
+    pub fn sprite(&self) -> &[TILE] {
         match self {
             Monsters::CashKnight => &sprites::CASH_KNIGHT,
             Monsters::MagicCandle => &sprites::MAGIC_CANDLE,
@@ -83,6 +86,9 @@ pub fn spawn_monster(
                         atlas.clone(),
                     )
                 );
+                if let Some(hitbox) = Hitbox::for_tile(i, bg == 0) {
+                    commands.insert(hitbox);
+                }
             }
         })
         .id()

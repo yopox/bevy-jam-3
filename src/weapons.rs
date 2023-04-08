@@ -1,5 +1,7 @@
 use bevy::prelude::*;
+use strum_macros::EnumIter;
 
+use crate::collision::Hitbox;
 use crate::GameState;
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
@@ -27,6 +29,7 @@ pub struct Weapon {
     pub name: char,
 }
 
+#[derive(Debug, EnumIter, Copy, Clone)]
 pub enum Weapons {
     Finger,
 }
@@ -145,7 +148,14 @@ fn shoot(
                         z_pos::SHOTS))
                     .insert(GlobalTransform::default())
                     .insert(VisibilityBundle::default())
-                    .with_children(|spawn| { spawn.spawn(weapon.1.shot_tile.sprite(0, 0, 0., &textures.mrmotext)); });
+                    .with_children(|spawn| {
+                        let tile = weapon.1.shot_tile;
+                        let mut commands = spawn
+                            .spawn(tile.sprite(0, 0, 0., &textures.mrmotext));
+                        if let Some(hitbox) = Hitbox::for_tile(tile.index, tile.bg == Palette::Transparent) {
+                            commands.insert(hitbox);
+                        }
+                    });
             }
         }
     }

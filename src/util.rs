@@ -28,7 +28,7 @@ pub mod z_pos {
     pub const GUI: f32 = 12.;
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub enum Palette {
     Black = 0,
 

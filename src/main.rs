@@ -1,11 +1,12 @@
 use bevy::prelude::*;
 use bevy_text_mode::TextModePlugin;
 
+use crate::collision::CollisionPlugin;
 use crate::graphics::GraphicsPlugin;
 use crate::loading::LoadingPlugin;
 use crate::survival::SurvivalPlugin;
 use crate::title::TitlePlugin;
-use crate::util::size;
+use crate::util::{Palette, size};
 use crate::util::size::tile_to_f32;
 use crate::weapons::WeaponPlugin;
 
@@ -15,6 +16,7 @@ mod graphics;
 mod survival;
 mod weapons;
 mod title;
+mod collision;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum GameState {
@@ -44,6 +46,7 @@ fn main() {
         )
         .add_state::<GameState>()
         .add_plugin(TextModePlugin)
+        .add_plugin(CollisionPlugin)
         .add_plugin(GraphicsPlugin)
         .add_plugin(LoadingPlugin)
         .add_plugin(SurvivalPlugin)

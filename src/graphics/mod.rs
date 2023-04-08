@@ -9,7 +9,7 @@ pub mod background;
 pub mod ship;
 pub mod tiles;
 pub mod monsters;
-mod sprites;
+pub mod sprites;
 
 pub struct GraphicsPlugin;
 

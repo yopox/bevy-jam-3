@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_text_mode::TextModeTextureAtlasSprite;
 
 use crate::{MainBundle, util};
+use crate::collision::Hitbox;
 use crate::graphics::sprites;
 use crate::graphics::text::glyph_index;
 use crate::util::{Palette, ship, size, z_pos};
@@ -46,6 +47,9 @@ pub fn spawn_ship(
                         atlas.clone(),
                     )
                 );
+                if let Some(hitbox) = Hitbox::for_tile(i, bg == 0) {
+                    commands.insert(hitbox);
+                }
                 if (x == 1 || x == 2) && y == 2 { commands.insert(ShipChar(if x == 1 { Side::Left } else { Side::Right })); }
             }
         });

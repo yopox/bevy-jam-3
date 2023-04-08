@@ -30,7 +30,7 @@ pub fn text(text: &str, x: usize, y: usize, z: f32) -> Text {
         y,
         z,
         bg: Palette::Black,
-        fg: Palette::White,
+        fg: Palette::LightTerracotta,
     }
 }
 

@@ -25,9 +25,9 @@ pub fn spawn_ship(
 ) {
     let colors = [
         Palette::Transparent,
-        Palette::DarkBlue,
+        Palette::Rock,
         Palette::Black,
-        Palette::White,
+        Palette::Lava,
     ];
     commands
         .spawn(Ship { y: 0 })

@@ -31,24 +31,52 @@ pub mod z_pos {
 #[derive(Copy, Clone)]
 pub enum Palette {
     Black = 0,
-    White,
-    Gray,
-    DarkGray,
-    Red,
-    DarkBlue,
+
+    Blue,
+    LightBlue,
+
     Gold,
+    LightGold,
+
+    Purple,
+    LightPurple,
+
+    Cactus,
+    LightCactus,
+
+    Terracotta,
+    LightTerracotta,
+
+    Red,
+    LightRed,
+
+    Lava,
+    Gravel,
+    Rock,
+    Dark,
+
     Transparent,
 }
 
 lazy_static! {
-    static ref COLOR_OF_PALETTE: [Color; 8] = [
+    static ref COLOR_OF_PALETTE: [Color; 18] = [
         Color::hex("#000000").unwrap(),
-        Color::hex("#ffffff").unwrap(),
-        Color::hex("#808080").unwrap(),
-        Color::hex("#404040").unwrap(),
-        Color::hex("#ff4500").unwrap(),
-        Color::hex("#344866").unwrap(),
-        Color::hex("#ffd700").unwrap(),
+        Color::hex("#627EAF").unwrap(),
+        Color::hex("#B3CBDF").unwrap(),
+        Color::hex("#FBCC0A").unwrap(),
+        Color::hex("#FBEAA6").unwrap(),
+        Color::hex("#88519B").unwrap(),
+        Color::hex("#CBAAD1").unwrap(),
+        Color::hex("#70824D").unwrap(),
+        Color::hex("#B8BF9D").unwrap(),
+        Color::hex("#C17329").unwrap(),
+        Color::hex("#F7C8A5").unwrap(),
+        Color::hex("#9E3636").unwrap(),
+        Color::hex("#F4898B").unwrap(),
+        Color::hex("#F7913D").unwrap(),
+        Color::hex("#989281").unwrap(),
+        Color::hex("#5B524C").unwrap(),
+        Color::hex("#3D2F2C").unwrap(),
         Color::hex("#00000000").unwrap(),
     ];
 }

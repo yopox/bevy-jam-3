@@ -2,8 +2,6 @@ use bevy::prelude::*;
 
 use crate::GameState;
 use crate::graphics::text;
-use crate::graphics::text::text;
-use crate::loading::Textures;
 use crate::util::{Palette, z_pos};
 
 pub struct TitlePlugin;
@@ -23,9 +21,9 @@ impl Plugin for TitlePlugin {
 fn setup(
     mut commands: Commands
 ) {
-    commands.spawn(text::from_middle("Game Jame 3", 0, 2, z_pos::GUI, Palette::White, Palette::Black))
+    commands.spawn(text::from_middle("Game Jame 3", 0, 2, z_pos::GUI, Palette::Transparent, Palette::LightTerracotta))
         .insert(TitleUI);
-    commands.spawn(text::from_middle("Press any key to continue.", 0, -6, z_pos::GUI, Palette::White, Palette::DarkGray))
+    commands.spawn(text::from_middle("Press any key to continue.", 0, -6, z_pos::GUI, Palette::Transparent, Palette::LightTerracotta))
         .insert(TitleUI);
 }
 

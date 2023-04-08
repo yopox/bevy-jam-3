@@ -34,12 +34,12 @@ impl Monsters {
     fn palette(&self) -> Vec<Palette> {
         match self {
             Monsters::CashKnight => vec![Palette::Transparent, Palette::Black, Palette::Gold],
-            Monsters::MagicCandle => vec![Palette::Transparent, Palette::Black, Palette::DarkGray, Palette::Red],
-            Monsters::Necromancer => vec![Palette::Transparent, Palette::Black, Palette::DarkBlue],
-            Monsters::StarFly => vec![Palette::Transparent, Palette::Black, Palette::DarkBlue],
-            Monsters::SpaceCrab => vec![Palette::Transparent, Palette::Black, Palette::Black],
-            Monsters::SpaceShrimp => vec![Palette::Transparent, Palette::Black, Palette::DarkGray],
-            Monsters::SuperEye => vec![Palette::Transparent, Palette::Black, Palette::Gray],
+            Monsters::MagicCandle => vec![Palette::Transparent, Palette::Black, Palette::LightGold, Palette::Red],
+            Monsters::Necromancer => vec![Palette::Transparent, Palette::Black, Palette::LightGold],
+            Monsters::StarFly => vec![Palette::Transparent, Palette::Black, Palette::Black],
+            Monsters::SpaceCrab => vec![Palette::Transparent, Palette::Black, Palette::Lava],
+            Monsters::SpaceShrimp => vec![Palette::Transparent, Palette::Black, Palette::Blue],
+            Monsters::SuperEye => vec![Palette::Transparent, Palette::Black, Palette::Blue],
         }
     }
 }
@@ -53,7 +53,7 @@ pub enum Families {
 impl Families {
     fn color(&self) -> Palette {
         match self {
-            Families::Bats => Palette::Gray,
+            Families::Bats => Palette::Blue,
             Families::Pharaoh => Palette::Gold,
             Families::Color(p) => *p,
         }

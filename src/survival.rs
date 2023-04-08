@@ -50,12 +50,12 @@ fn setup(
     spawn_ship(&mut commands, &textures.mrmotext);
     spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::StarFly, Families::Bats, 18, 14);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceCrab, Families::Bats, 20, 11);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceCrab, Families::Color(Palette::Red), 20, 11);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::CashKnight, Families::Bats, 8, 13);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceShrimp, Families::Bats, 22, 7);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SuperEye, Families::Bats, 5, 5);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::MagicCandle, Families::Bats, 11, 5);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::Necromancer, Families::Bats, 19, 5);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceShrimp, Families::Color(Palette::LightBlue), 22, 7);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SuperEye, Families::Pharaoh, 5, 5);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::MagicCandle, Families::Color(Palette::Cactus), 11, 5);
+    spawn_monster(&mut commands, &textures.mrmotext, Monsters::Necromancer, Families::Color(Palette::Red), 19, 5);
     spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
 
     commands
@@ -66,7 +66,7 @@ fn setup(
         .spawn(text("life[", 18, 1, z_pos::GUI))
         .insert(SurvivalUI);
     commands
-        .spawn(color_text(LIFE_TEXTS[5], 23, 1, z_pos::GUI, Palette::Black, Palette::Red))
+        .spawn(color_text(LIFE_TEXTS[5], 23, 1, z_pos::GUI, Palette::Transparent, Palette::Red))
         .insert(Life(2))
         .insert(SurvivalUI);
     commands

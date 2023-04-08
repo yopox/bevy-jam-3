@@ -3,8 +3,8 @@ use bevy::prelude::{BuildChildren, Commands, Entity};
 use bevy::sprite::TextureAtlas;
 use strum_macros::EnumIter;
 
-use crate::{MainBundle, util};
-use crate::collision::Hitbox;
+use crate::{collision, MainBundle, util};
+use crate::collision::{BodyType, Hitbox, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
 use crate::util::{Palette, z_pos};
@@ -74,8 +74,14 @@ pub fn spawn_monster(
     let mut palette = monster.palette();
     palette[1] = family.color();
 
+    let body_size = collision::body_size(monster.sprite());
     commands
         .spawn(MainBundle::from_xyz(tile_to_f32(x), tile_to_f32(y), z_pos::ENEMIES))
+        .insert(SolidBody {
+            body_type: BodyType::Enemy,
+            width: body_size.x,
+            height: body_size.y,
+        })
         .with_children(|builder| {
             for &(x, y, i, bg, fg, flip, rotation) in monster.sprite() {
                 let mut commands = builder.spawn(

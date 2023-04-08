@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use strum_macros::EnumIter;
 
-use crate::collision::Hitbox;
+use crate::collision::{BodyType, Hitbox, SolidBody};
 use crate::GameState;
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
@@ -148,6 +148,11 @@ fn shoot(
                         z_pos::SHOTS))
                     .insert(GlobalTransform::default())
                     .insert(VisibilityBundle::default())
+                    .insert(SolidBody {
+                        body_type: BodyType::ShipShot,
+                        width: 8.0,
+                        height: 8.0,
+                    })
                     .with_children(|spawn| {
                         let tile = weapon.1.shot_tile;
                         let mut commands = spawn

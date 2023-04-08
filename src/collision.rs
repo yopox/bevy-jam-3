@@ -68,11 +68,12 @@ impl Hitbox {
     /// Returns the collider for the tile [index]
     pub fn for_tile(index: usize, transparent_bg: bool) -> Option<Hitbox> {
         match (index, transparent_bg) {
-            /// Dash: full width, 1px height, 4px dy
+            // Dash: full width, 1px height, 4px dy
             (877, _) => Some(Hitbox { width: 8.0, height: 1.0, dy: 4.0, ..default() }),
-            /// Default case: whole box
+            // Transparent: no hitbox
+            (0, true) => None,
+            // Default case: whole box
             _ => Some(Hitbox { width: 8.0, height: 8.0, ..default() }),
-            // (0, false) => Some(Hitbox { width: 8.0, height: 8.0, ..default() }),
             // _ => None,
         }
     }

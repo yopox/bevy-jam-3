@@ -29,7 +29,7 @@ pub mod z_pos {
 }
 
 pub mod fight {
-    pub const ENEMY_COOLDOWN: usize = 100;
+    pub const ENEMY_COOLDOWN: usize = 80;
 }
 
 #[derive(Copy, Clone, Eq, PartialEq)]

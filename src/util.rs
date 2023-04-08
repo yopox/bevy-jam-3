@@ -28,6 +28,10 @@ pub mod z_pos {
     pub const GUI: f32 = 12.;
 }
 
+pub mod fight {
+    pub const ENEMY_COOLDOWN: usize = 100;
+}
+
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum Palette {
     Black = 0,

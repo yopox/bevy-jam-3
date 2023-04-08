@@ -1,7 +1,7 @@
 use bevy::app::{App, Plugin};
 use bevy::hierarchy::HierarchyQueryExt;
 use bevy::math::{vec2, vec3, Vec3Swizzles};
-use bevy::prelude::{Children, Commands, Component, Entity, Query, Transform, Without};
+use bevy::prelude::{Children, Commands, Component, DetectChangesMut, Entity, EventReader, EventWriter, Query, Transform, Visibility, Without};
 use bevy::sprite::collide_aabb;
 use bevy::utils::default;
 use strum::IntoEnumIterator;
@@ -9,14 +9,16 @@ use strum::IntoEnumIterator;
 use crate::graphics::monsters::Monsters;
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
-use crate::util::{Palette, size};
+use crate::util::{fight, Palette, size};
 use crate::weapons::{Weapon, Weapons};
 
 pub struct CollisionPlugin;
 
 impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems((collide, update_invincible));
+        app
+            .add_event::<Contact>()
+            .add_systems((collide, update_invincible, add_invincible));
     }
 }
 
@@ -47,6 +49,8 @@ impl BodyType {
         }
     }
 }
+
+pub struct Contact((BodyType, Entity), (BodyType, Entity));
 
 /// Excludes the entity from collision detection.
 #[derive(Component)]
@@ -90,13 +94,33 @@ pub fn body_size(sprite: &[TILE]) -> bevy::math::Vec2 {
     return vec2(size::tile_to_f32(x + 1), size::tile_to_f32(y + 1));
 }
 
+pub fn add_invincible(
+    mut commands: Commands,
+    mut contact: EventReader<Contact>,
+    invincible: Query<Option<&Invincible>>,
+) {
+    for Contact((b1, e1), (b2, e2)) in contact.iter() {
+        for (b, e) in [(b1, e1), (b2, e2)] {
+            if *b == BodyType::Ship || *b == BodyType::Enemy {
+                // TODO: Small freeze for enemies, global freeze if the ship is hit, long global freeze if ship is destroyed
+                if let Ok(Some(_)) = invincible.get(*e) { continue }
+                commands.entity(*e).insert(Invincible(fight::ENEMY_COOLDOWN));
+                // info!("Hit!");
+            }
+        }
+    }
+}
+
 pub fn update_invincible(
     mut commands: Commands,
-    mut invincible: Query<(&mut Invincible, Entity)>,
+    mut invincible: Query<(&mut Invincible, &mut Visibility, Entity)>,
 ) {
-    for (mut inv, id) in invincible.iter_mut() {
+    for (mut inv, mut visibility, id) in invincible.iter_mut() {
         if inv.0 == 0 { commands.entity(id).remove::<Invincible>(); }
-        else { inv.0 -= 1; }
+        else {
+            inv.0 -= 1;
+            visibility.set_if_neq(if (inv.0 / 20) % 2 == 0 {Visibility::Inherited}  else {Visibility::Hidden});
+        }
     }
 }
 
@@ -104,6 +128,7 @@ pub fn collide(
     colliders: Query<(&SolidBody, &Transform, Entity), Without<Invincible>>,
     children_query: Query<&Children>,
     hitboxes: Query<(&Hitbox, &Transform), Without<SolidBody>>,
+    mut contact: EventWriter<Contact>,
 ) {
     let bodies = &colliders.iter().collect::<Vec<(&SolidBody, &Transform, Entity)>>();
     for (i, &(body1, pos1, id1)) in bodies.iter().enumerate() {
@@ -133,7 +158,7 @@ pub fn collide(
                              pos2.translation.y + cpos2.translation.y + hitbox2.dy + hitbox2.height / 2., 0.),
                         vec2(hitbox2.width, hitbox2.height)
                     ).is_some() {
-                        // info!("Collision!");
+                        contact.send(Contact((body1.body_type, id1), (body2.body_type, id2)));
                         break 'for_body;
                     }
                 }

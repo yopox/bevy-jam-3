@@ -31,7 +31,7 @@ pub mod z_pos {
 }
 
 pub mod fight {
-    pub const ENEMY_COOLDOWN: usize = 80;
+    pub const ENEMY_COOLDOWN: usize = 120;
 }
 
 pub mod background {

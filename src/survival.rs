@@ -2,6 +2,7 @@ use std::cmp::{max, min};
 
 use bevy::prelude::*;
 
+use crate::collision::Invincible;
 use crate::GameState;
 use crate::graphics::frame::spawn_frame;
 use crate::graphics::monsters::{Families, Monsters, spawn_monster};
@@ -111,11 +112,11 @@ impl Monster {
 }
 
 pub fn monster_dies(
-    monsters: Query<(&Monster, Entity), Changed<Monster>>,
+    monsters: Query<(&Monster, &Invincible, Entity), Changed<Invincible>>,
     mut commands: Commands,
 ) {
-    for (monster, id) in monsters.iter() {
-        if monster.lives <= 0 {
+    for (monster, invincible, id) in monsters.iter() {
+        if monster.lives <= 0 && invincible.0 == 0 {
             // Should put an animation, freeze something or whatever
             commands.entity(id).despawn_recursive();
         }

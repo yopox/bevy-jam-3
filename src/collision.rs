@@ -61,7 +61,7 @@ pub struct Contact(pub (BodyType, Entity), pub (BodyType, Entity));
 
 /// Excludes the entity from collision detection.
 #[derive(Component)]
-pub struct Invincible(usize);
+pub struct Invincible(pub usize);
 
 #[derive(Component, Default, Clone, Copy)]
 pub struct Hitbox {

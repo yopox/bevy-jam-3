@@ -32,6 +32,10 @@ pub mod fight {
     pub const ENEMY_COOLDOWN: usize = 80;
 }
 
+pub mod background {
+    pub const SPEED: f32 = 0.05;
+}
+
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum Palette {
     Black = 0,

@@ -1,6 +1,7 @@
 use bevy::app::App;
 use bevy::prelude::Plugin;
 
+use crate::graphics::background::BackgroundPlugin;
 use crate::graphics::text::TextPlugin;
 
 pub mod frame;
@@ -17,6 +18,7 @@ impl Plugin for GraphicsPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_system(tiles::flip)
-            .add_plugin(TextPlugin);
+            .add_plugin(TextPlugin)
+            .add_plugin(BackgroundPlugin);
     }
 }

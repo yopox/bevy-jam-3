@@ -114,7 +114,7 @@ fn spawn_layout(
     atlas: &Handle<TextureAtlas>,
 ) -> isize {
     let size = util::background::LAYOUT_HEIGHT;
-    let offset_y = rand::thread_rng().next_u32() % 6;
+    let offset_y = 2 + rand::thread_rng().next_u32() % 3;
 
     for (element, x, y) in layout.get_elements() {
         commands

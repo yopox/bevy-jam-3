@@ -54,13 +54,16 @@ fn spawn_rails(
 }
 
 fn spawn_rail(commands: &mut Commands, atlas: &Handle<TextureAtlas>, x: usize, y: usize) {
-    commands
-        .spawn(util::sprite(
+    let mut bundle = util::sprite(
             if rand::random::<f32>() < 0.1 { 299 } else { 331 }, x + 15, y, z_pos::RAILS,
             Palette::Transparent, Palette::Gravel,
             x == 1, 0,
             atlas.clone(),
-        ))
+        );
+    bundle.sprite.alpha = util::background::ALPHA;
+
+    commands
+        .spawn(bundle)
         .insert(Rail(x))
         .insert(Background);
 }
@@ -123,14 +126,14 @@ fn spawn_layout(
             .insert(Background)
             .with_children(|builder| {
                 for &(tile_x, tile_y, i, bg, fg, flip, rotation) in element.get_sprite().iter() {
-                    builder.spawn(
-                        util::sprite(
+                    let mut bundle = util::sprite(
                             i, tile_x, tile_y, 0.,
                             sprites::RTEMO_PALETTE[bg], sprites::RTEMO_PALETTE[fg],
                             flip, rotation,
                             atlas.clone(),
-                        )
-                    );
+                        );
+                    bundle.sprite.alpha = util::background::ALPHA;
+                    builder.spawn(bundle);
                 }
             });
     }

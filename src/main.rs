@@ -29,6 +29,7 @@ enum GameState {
 fn main() {
     App::new()
         .insert_resource(ClearColor(Palette::Dark.into()))
+        .insert_resource(Msaa::Off)
         .add_plugins(DefaultPlugins
             .set(ImagePlugin::default_nearest())
             .set(WindowPlugin {

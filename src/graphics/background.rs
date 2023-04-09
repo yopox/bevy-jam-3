@@ -80,7 +80,6 @@ fn update_background(
     // Update timer
     timer.0 -= 1;
     timer.1 -= 1;
-    info!("Timer: {}, {}", timer.0, timer.1);
     if timer.0 <= 0 {
         let layout = Layouts::iter().choose(&mut rand::thread_rng()).unwrap();
         timer.0 = spawn_layout(&mut commands, Side::Left, layout, util::background::LAYOUT_HEIGHT, &textures.mrmotext);

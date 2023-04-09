@@ -33,13 +33,15 @@ impl Tile {
     }
 
     pub fn with_fg(&mut self, fg: Palette) -> Self {
-        Tile {
-            index: self.index,
-            bg: self.bg,
-            fg,
-            flip: self.flip,
-            rotation: self.rotation,
-        }
+        Tile { index: self.index, bg: self.bg, fg, flip: self.flip, rotation: self.rotation, }
+    }
+
+    pub fn with_rotation(&mut self, rotation: u8) -> Self {
+        Tile { index: self.index, bg: self.bg, fg: self.fg, flip: self.flip, rotation, }
+    }
+
+    pub fn flip(&mut self) -> Self {
+        Tile { index: self.index, bg: self.bg, fg: self.fg, flip: !self.flip, rotation: self.rotation, }
     }
 
     pub fn sprite(&self, x: usize, y: usize, z: f32, atlas: &Handle<TextureAtlas>) -> TextModeSpriteSheetBundle {
@@ -50,6 +52,8 @@ impl Tile {
 pub enum Tiles {
     LeftHand,
     Dash,
+    DoubleCannon,
+    Dot,
 }
 
 impl Tiles {
@@ -57,6 +61,8 @@ impl Tiles {
         match self {
             Tiles::LeftHand => Tile::from_index(718),
             Tiles::Dash => Tile::from_index(877),
+            Tiles::DoubleCannon => Tile::from_index(1021).with_rotation(1),
+            Tiles::Dot => Tile::from_index(860),
         }
     }
 }

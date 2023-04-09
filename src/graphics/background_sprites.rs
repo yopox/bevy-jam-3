@@ -12,9 +12,9 @@ pub enum ElementSize {
 impl ElementSize {
     pub fn get_sprite(&self) -> &[TILE] {
         match self {
-            ElementSize::Small => [THING].choose(&mut rand::thread_rng()),
-            ElementSize::Medium => [THING].choose(&mut rand::thread_rng()),
-            ElementSize::Large => [THING].choose(&mut rand::thread_rng()),
+            ElementSize::Small => [NO_NAME].choose(&mut rand::thread_rng()),
+            ElementSize::Medium => [NO_NAME].choose(&mut rand::thread_rng()),
+            ElementSize::Large => [NO_NAME].choose(&mut rand::thread_rng()),
         }.unwrap()
     }
 }
@@ -26,14 +26,14 @@ pub enum Layouts {
 }
 
 impl Layouts {
-    fn get_layout(&self) -> Vec<(ElementSize, usize, usize)> {
+    pub fn get_elements(&self) -> Vec<(ElementSize, usize, usize)> {
         match self {
             Layouts::Layout1 => vec![
                 (ElementSize::Small, 1, 3),
-                (ElementSize::Medium, 4, 2),
+                (ElementSize::Medium, 4, 7),
             ],
             Layouts::Layout2 => vec![
-                (ElementSize::Large, 2, 2),
+                (ElementSize::Large, 2, 8),
             ]
         }
     }

@@ -39,6 +39,8 @@ pub mod fight {
 
 pub mod background {
     pub const SPEED: f32 = 0.05;
+    pub const LAYOUT_WIDTH: usize = 13;
+    pub const LAYOUT_HEIGHT: usize = 15;
 }
 
 #[derive(Copy, Clone, Eq, PartialEq)]

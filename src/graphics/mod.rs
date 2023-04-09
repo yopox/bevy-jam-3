@@ -11,6 +11,7 @@ pub mod ship;
 pub mod tiles;
 pub mod monsters;
 pub mod sprites;
+mod background_sprites;
 
 pub struct GraphicsPlugin;
 

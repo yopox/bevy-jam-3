@@ -96,7 +96,7 @@ fn update_background(
         if let Some(rail) = rail {
             if pos.translation.y <= -8. {
                 commands.entity(id).despawn_recursive();
-                spawn_rail(&mut commands, &textures.mrmotext, rail.0, size::HEIGHT - 1);
+                spawn_rail(&mut commands, &textures.mrmotext, rail.0, size::HEIGHT);
             }
         } else {
             if pos.translation.y < -120. {

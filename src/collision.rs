@@ -82,6 +82,8 @@ impl Hitbox {
             // Enemy details, no hitbox
             (619, _) | (268, _) | (487, _) | (777, _) | (967, _)
             | (463, _) | (397, _) | (643, _) => None,
+            // Ship border, no hitbox
+            (56, _) | (59, _) | (231, _) => None,
             // Default case: whole box
             _ => Some(Hitbox { width: 8.0, height: 8.0, ..default() }),
         }

@@ -155,7 +155,7 @@ fn update_weapons(
 
     for (weapon, just_fired, mut pos, id) in weapons.iter_mut() {
         pos.translation.y = ship_pos.y + 16.;
-        pos.translation.x = ship_pos.x + if weapon.0 == Side::Left { -tile_to_f32(1) } else { tile_to_f32(4) };
+        pos.translation.x = ship_pos.x + if weapon.0 == Side::Left { -2. } else { tile_to_f32(3) + 2. };
         if let Some(mut just_fired) = just_fired {
             if just_fired.0 <= weapon.1.cooldown / 2 { pos.translation.x += if weapon.0 == Side::Left { 1. } else { -1. }; }
             just_fired.0 += 1;

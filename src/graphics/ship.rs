@@ -5,7 +5,7 @@ use crate::{MainBundle, util};
 use crate::collision::Hitbox;
 use crate::graphics::sprites;
 use crate::graphics::text::glyph_index;
-use crate::util::{Palette, ship, size, z_pos};
+use crate::util::{ship, size, z_pos};
 use crate::util::size::tile_to_f32;
 use crate::weapons::{Side, WeaponChanged};
 
@@ -24,16 +24,11 @@ pub fn spawn_ship(
     commands: &mut Commands,
     atlas: &Handle<TextureAtlas>,
 ) {
-    let colors = [
-        Palette::Transparent,
-        Palette::Rock,
-        Palette::Black,
-        Palette::Lava,
-    ];
+    let colors = sprites::RTEMO_PALETTE;
     commands
         .spawn(Ship { y: 0 })
         .insert(MainBundle::from_xyz(
-            tile_to_f32(size::WIDTH) / 2. - 16.,
+            tile_to_f32(size::WIDTH) / 2. - tile_to_f32(2),
             ship::INIT_Y,
             z_pos::MACHINE,
         ))

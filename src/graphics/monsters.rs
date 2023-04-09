@@ -1,5 +1,5 @@
 use bevy::asset::Handle;
-use bevy::prelude::{BuildChildren, Commands, Entity};
+use bevy::prelude::*;
 use bevy::sprite::TextureAtlas;
 use strum_macros::EnumIter;
 
@@ -7,6 +7,7 @@ use crate::{collision, MainBundle, util};
 use crate::collision::{BodyType, Hitbox, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
+use crate::survival::Monster;
 use crate::util::{Palette, z_pos};
 use crate::util::size::tile_to_f32;
 
@@ -48,6 +49,10 @@ impl Monsters {
             Monsters::SuperEye => vec![Palette::Transparent, Palette::Black, Palette::Blue],
         }
     }
+
+    fn to_monster(&self) -> Monster {
+        Monster::new(10)
+    }
 }
 
 pub enum Families {
@@ -85,6 +90,7 @@ pub fn spawn_monster(
             width: body_size.x,
             height: body_size.y,
         })
+        .insert(monster.to_monster())
         .with_children(|builder| {
             for &(x, y, i, bg, fg, flip, rotation) in monster.sprite() {
                 let mut commands = builder.spawn(

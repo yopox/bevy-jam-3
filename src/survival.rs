@@ -10,7 +10,7 @@ use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
 use crate::util::{Palette, z_pos};
-use crate::weapons::{Side, spawn_weapon, WeaponChanged, Weapons};
+use crate::weapons::{monster_looses_life, Side, spawn_weapon, WeaponChanged, Weapons};
 
 pub struct SurvivalPlugin;
 
@@ -20,7 +20,8 @@ impl Plugin for SurvivalPlugin {
             .add_event::<ShipMoveEvent>()
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
-                (update_score, increase_score, update_life, update_ship_image, update_ship_y, update_ship_name)
+                (update_score, increase_score, update_life, update_ship_image, update_ship_y,
+                 update_ship_name, monster_looses_life, monster_dies)
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -95,6 +96,29 @@ fn update_life(
     if let Ok((mut text, &Life(lives))) = query.get_single_mut() {
         let lives = min(5, max(0, lives)) as usize;
         text.text = LIFE_TEXTS[lives].into();
+    }
+}
+
+#[derive(Component)]
+pub struct Monster {
+    pub lives: i16,
+}
+
+impl Monster {
+    pub fn new(lives: i16) -> Self {
+        Self { lives }
+    }
+}
+
+pub fn monster_dies(
+    monsters: Query<(&Monster, Entity), Changed<Monster>>,
+    mut commands: Commands,
+) {
+    for (monster, id) in monsters.iter() {
+        if monster.lives <= 0 {
+            // Should put an animation, freeze something or whatever
+            commands.entity(id).despawn_recursive();
+        }
     }
 }
 

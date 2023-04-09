@@ -39,7 +39,7 @@ pub struct SolidBody {
     pub height: f32,
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum BodyType {
     Enemy,
     EnemyShot,

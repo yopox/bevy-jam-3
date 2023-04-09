@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::utils::tracing::subscriber::with_default;
 use strum_macros::EnumIter;
 
 use crate::{GameState, MainBundle};
@@ -6,6 +7,7 @@ use crate::collision::{BodyType, Contact, Hitbox, SolidBody};
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
+use crate::survival::Monster;
 use crate::util::{is_oob, Palette, z_pos};
 use crate::util::ship::LASER_LENGTH;
 use crate::util::size::tile_to_f32;
@@ -136,6 +138,7 @@ pub struct Shot {
     piercing: bool,
     side: Side,
     speed: Vec2,
+    damages: i16,
     dy: f32,
     dx: f32,
     width: usize,
@@ -147,6 +150,7 @@ impl Default for Shot {
             piercing: false,
             side: Side::Left,
             speed: Default::default(),
+            damages: 1,
             dy: 0.0,
             dx: 0.0,
             width: 1,
@@ -295,6 +299,32 @@ fn collide_shot(
     for Contact((body1, id1), (body2, id2)) in contact.iter() {
         destroy_shot(&mut commands, &shot_info, body1, id1, body2);
         destroy_shot(&mut commands, &shot_info, body2, id2, body1);
+    }
+}
+
+pub fn monster_looses_life(
+    mut contact: EventReader<Contact>,
+    mut monsters: Query<&mut Monster>,
+    shot_info: Query<&Shot>,
+) {
+    for Contact((body1, id1), (body2, id2)) in contact.iter() {
+        match (body1, body2) {
+            (BodyType::Enemy, BodyType::ShipShot) => {
+                if let Ok(shot) = shot_info.get(*id2) {
+                    if let Ok(mut monster) = monsters.get_mut(*id1) {
+                        monster.lives -= shot.damages;
+                    }
+                }
+            }
+            (BodyType::ShipShot, BodyType::Enemy) => {
+                if let Ok(shot) = shot_info.get(*id1) {
+                    if let Ok(mut monster) = monsters.get_mut(*id2) {
+                        monster.lives -= shot.damages;
+                    }
+                }
+            }
+            (_, _) => {}
+        }
     }
 }
 

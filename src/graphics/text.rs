@@ -56,12 +56,12 @@ pub fn from_middle(text: &str, x: isize, y: isize, z: f32, bg: Palette, fg: Pale
 
 fn update_texts(
     mut commands: Commands,
-    mut texts: Query<(&mut Text, Entity), Or<(Changed<Text>, Added<Text>)>>,
+    texts: Query<(&Text, Entity), Or<(Changed<Text>, Added<Text>)>>,
     textures: Option<Res<Textures>>,
 ) {
     let Some(textures) = textures else { return; };
 
-    for (mut text, e) in texts.iter_mut() {
+    for (text, e) in texts.iter() {
         commands.entity(e).despawn_descendants();
         commands.entity(e).clear_children();
         commands.entity(e).insert(MainBundle::from_tiles(text.x, text.y, text.z));

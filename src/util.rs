@@ -10,12 +10,14 @@ use crate::util::size::tile_to_f32;
 
 pub mod size {
     pub const SCALE: f32 = 5.;
-    pub(in crate::util) const TILE_SIZE: f32 = 8.;
+
+    const TILE_SIZE: usize = 8;
+
     pub const WIDTH: usize = 32;
     pub const HEIGHT: usize = 18;
 
-    /// Returns world coordinates for a tile, for instance `2` -> `2 as f32 * TILE_SIZE`.
-    pub fn tile_to_f32(tile: usize) -> f32 { tile as f32 * TILE_SIZE }
+    /// Returns world coordinates for a tile, for instance `2` -> `(2 * TILE_SIZE) as f32 `.
+    pub const fn tile_to_f32(tile: usize) -> f32 { (tile * TILE_SIZE) as f32 }
 }
 
 pub mod z_pos {
@@ -131,7 +133,8 @@ pub mod ship {
     use crate::util::size;
 
     pub const SPEED: f32 = 0.3;
-    pub const INIT_Y: f32 = size::HEIGHT as f32 * size::TILE_SIZE / 2. - 16.;
+    pub const INIT_Y: f32 = size::tile_to_f32(size::HEIGHT / 2 - 2);
     pub const MAX_Y: i64 = 190;
     pub const MIN_Y: i64 = -170;
+    pub const LASER_LENGTH: usize = size::WIDTH / 2 - 3;
 }

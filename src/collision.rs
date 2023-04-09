@@ -1,6 +1,6 @@
 use bevy::app::{App, Plugin};
 use bevy::hierarchy::HierarchyQueryExt;
-use bevy::math::{vec2, vec3, Vec3Swizzles};
+use bevy::math::{vec2, vec3};
 use bevy::prelude::{Children, Commands, Component, DetectChangesMut, Entity, EventReader, EventWriter, Query, Transform, Visibility, Without};
 use bevy::sprite::collide_aabb;
 use bevy::utils::default;
@@ -63,7 +63,7 @@ pub struct Contact(pub (BodyType, Entity), pub (BodyType, Entity));
 #[derive(Component)]
 pub struct Invincible(usize);
 
-#[derive(Component, Default)]
+#[derive(Component, Default, Clone, Copy)]
 pub struct Hitbox {
     pub dx: f32,
     pub dy: f32,

@@ -44,6 +44,10 @@ pub mod background {
     pub const LAYOUT_HEIGHT: usize = 13;
 }
 
+pub mod misc {
+    pub const ANIMATION_INTERVAL: usize = 80;
+}
+
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum Palette {
     Black = 0,

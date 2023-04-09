@@ -3,6 +3,7 @@ use rand::RngCore;
 use strum::IntoEnumIterator;
 
 use crate::{GameState, MainBundle, util};
+use crate::graphics::animation::NoAnimation;
 use crate::graphics::background_sprites::Layouts;
 use crate::graphics::sprites;
 use crate::loading::Textures;
@@ -62,6 +63,7 @@ fn spawn_rail(commands: &mut Commands, atlas: &Handle<TextureAtlas>, x: usize, y
     commands
         .spawn(bundle)
         .insert(Rail(x))
+        .insert(NoAnimation)
         .insert(Background);
 }
 
@@ -127,7 +129,9 @@ fn spawn_layout(
                             atlas.clone(),
                         );
                     bundle.sprite.alpha = util::background::ALPHA;
-                    builder.spawn(bundle);
+                    builder
+                        .spawn(bundle)
+                        .insert(NoAnimation);
                 }
             });
     }

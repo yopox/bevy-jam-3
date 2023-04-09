@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_text_mode::TextModeTextureAtlasSprite;
 
 use crate::{MainBundle, util};
+use crate::graphics::animation::NoAnimation;
 use crate::graphics::sprites;
 use crate::graphics::text::glyph_index;
 use crate::util::{ship, Side, size, z_pos};
@@ -33,14 +34,14 @@ pub fn spawn_ship(
         ))
         .with_children(|builder| {
             for (x, y, i, bg, fg, flip, rotation) in sprites::SHIP {
-                let mut commands = builder.spawn(
-                    util::sprite(
+                let mut commands = builder
+                    .spawn(util::sprite(
                         i, x, y, 0.,
                         colors[bg], colors[fg],
                         flip, rotation,
                         atlas.clone(),
-                    )
-                );
+                    ));
+                commands.insert(NoAnimation);
                 if (x == 1 || x == 2) && y == 2 { commands.insert(ShipChar(if x == 1 { Side::Left } else { Side::Right })); }
             }
         });

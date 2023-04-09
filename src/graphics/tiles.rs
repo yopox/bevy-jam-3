@@ -1,7 +1,9 @@
-use bevy::prelude::Handle;
+use bevy::hierarchy::{Children, HierarchyQueryExt};
+use bevy::prelude::{Added, Commands, Component, Entity, Handle, Query, Transform};
 use bevy::sprite::TextureAtlas;
-use bevy_text_mode::TextModeSpriteSheetBundle;
+use bevy_text_mode::{TextModeSpriteSheetBundle, TextModeTextureAtlasSprite};
 
+use crate::collision::SolidBody;
 use crate::util::{Palette, sprite};
 
 #[derive(Copy, Clone)]
@@ -58,3 +60,23 @@ impl Tiles {
         }
     }
 }
+
+#[derive(Component)]
+pub struct Flip;
+
+pub fn flip(
+    mut commands: Commands,
+    flipped: Query<(&SolidBody, Entity), Added<Flip>>,
+    children_query: Query<&Children>,
+    mut tile: Query<(&mut TextModeTextureAtlasSprite, &mut Transform)>
+) {
+    for (body, id) in &flipped {
+        for child in children_query.iter_descendants(id) {
+            let Ok((mut sprite, mut transform)) = tile.get_mut(child) else { continue };
+            sprite.flip_x = !sprite.flip_x;
+            transform.translation.x = body.width - transform.translation.x - 8.;
+        }
+        commands.entity(id).remove::<Flip>();
+    }
+}
+

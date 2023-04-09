@@ -16,6 +16,7 @@ pub struct GraphicsPlugin;
 impl Plugin for GraphicsPlugin {
     fn build(&self, app: &mut App) {
         app
+            .add_system(tiles::flip)
             .add_plugin(TextPlugin);
     }
 }

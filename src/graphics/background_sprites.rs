@@ -1,7 +1,9 @@
-use rand::prelude::SliceRandom;
+use rand::prelude::{IteratorRandom, SliceRandom};
+use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
 use crate::graphics::sprites::TILE;
+use crate::util::background::LAYOUT_HEIGHT;
 
 pub enum ElementSize {
     Small,
@@ -26,6 +28,10 @@ pub enum Layouts {
 }
 
 impl Layouts {
+    pub fn random() -> Self {
+        Self::iter().choose(&mut rand::thread_rng()).unwrap()
+    }
+
     pub fn get_elements(&self) -> Vec<(ElementSize, usize, usize)> {
         match self {
             Layouts::Layout1 => vec![

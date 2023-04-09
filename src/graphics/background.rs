@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use rand::prelude::IteratorRandom;
 use rand::RngCore;
 use strum::IntoEnumIterator;
 
@@ -31,12 +30,10 @@ fn setup(
 ) {
     spawn_rails(&mut commands, &textures.mrmotext);
 
-    for dy in [0, util::background::LAYOUT_HEIGHT] {
-        let layout = Layouts::iter().choose(&mut rand::thread_rng()).unwrap();
-        timer.0 = spawn_layout(&mut commands, Side::Left, layout, dy, &textures.mrmotext);
-        let layout = Layouts::iter().choose(&mut rand::thread_rng()).unwrap();
-        timer.1 = spawn_layout(&mut commands, Side::Right, layout, dy, &textures.mrmotext);
-    }
+    timer.0 = (rand::thread_rng().next_u32() % 600) as isize;
+    timer.1 = (rand::thread_rng().next_u32() % 600) as isize;
+    spawn_layout(&mut commands, Side::Left, 0, &textures.mrmotext);
+    spawn_layout(&mut commands, Side::Right, 0, &textures.mrmotext);
 }
 
 #[derive(Component)]
@@ -81,11 +78,9 @@ fn update_background(
     timer.0 -= 1;
     timer.1 -= 1;
     if timer.0 <= 0 {
-        let layout = Layouts::iter().choose(&mut rand::thread_rng()).unwrap();
-        timer.0 = spawn_layout(&mut commands, Side::Left, layout, util::background::LAYOUT_HEIGHT, &textures.mrmotext);
+        timer.0 = spawn_layout(&mut commands, Side::Left, util::background::LAYOUT_HEIGHT, &textures.mrmotext);
     } else if timer.1 <= 0 {
-        let layout = Layouts::iter().choose(&mut rand::thread_rng()).unwrap();
-        timer.1 = spawn_layout(&mut commands, Side::Right, layout, util::background::LAYOUT_HEIGHT, &textures.mrmotext);
+        timer.1 = spawn_layout(&mut commands, Side::Right, util::background::LAYOUT_HEIGHT, &textures.mrmotext);
     }
 
     // Move and despawn entities
@@ -108,10 +103,10 @@ fn update_background(
 fn spawn_layout(
     commands: &mut Commands,
     side: Side,
-    layout: Layouts,
     dy: usize,
     atlas: &Handle<TextureAtlas>,
 ) -> isize {
+    let layout = Layouts::random();
     let size = util::background::LAYOUT_HEIGHT;
     let offset_y = 2 + rand::thread_rng().next_u32() % 3;
 
@@ -119,7 +114,7 @@ fn spawn_layout(
         commands
             .spawn(MainBundle::from_xyz(
                 tile_to_f32(x + if side == Side::Left { 2 } else { 17 }),
-                tile_to_f32(y + 3 + dy + offset_y as usize),
+                tile_to_f32(y + 3 + dy as usize),
                 z_pos::BACKGROUND
             ))
             .insert(Background)

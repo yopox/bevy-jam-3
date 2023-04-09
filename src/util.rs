@@ -22,9 +22,9 @@ pub mod size {
 
 pub mod z_pos {
     pub const BACKGROUND: f32 = 0.;
+    pub const RAILS: f32 = 1.;
     pub const ENEMIES: f32 = 2.;
     pub const SHOTS: f32 = 4.;
-    pub const RAILS: f32 = 6.;
     pub const WEAPONS: f32 = 7.;
     pub const MACHINE: f32 = 8.;
     pub const FRAME: f32 = 10.;

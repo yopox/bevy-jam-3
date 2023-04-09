@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::utils::tracing::subscriber::with_default;
 use strum_macros::EnumIter;
 
 use crate::{GameState, MainBundle};
@@ -8,7 +7,7 @@ use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
 use crate::survival::Monster;
-use crate::util::{is_oob, Palette, z_pos};
+use crate::util::{is_oob, Palette, Side, z_pos};
 use crate::util::ship::LASER_LENGTH;
 use crate::util::size::tile_to_f32;
 
@@ -66,7 +65,7 @@ impl Weapons {
                 Shot { speed: Vec2::new(-0.5, -0.5), dy: -3., ..Shot::default() },
             ],
             Weapons::Laser => vec![
-                Shot { piercing: true, speed: Vec2::new(0., 0.), width: LASER_LENGTH, dx: tile_to_f32(1), ..Shot::default() },
+                Shot { piercing: true, speed: Vec2::new(0., 0.), width: LASER_LENGTH, ..Shot::default() },
             ],
         }
     }
@@ -118,9 +117,6 @@ impl Plugin for WeaponPlugin {
             );
     }
 }
-
-#[derive(Eq, PartialEq, Copy, Clone)]
-pub enum Side { Left, Right }
 
 #[derive(Component)]
 pub struct ActiveWeapon(pub Side, pub Weapon);
@@ -193,12 +189,13 @@ fn update_weapons(
     let ship_pos = ship.single().translation;
 
     for (weapon, just_fired, mut pos, id) in weapons.iter_mut() {
+        let &ActiveWeapon(side, Weapon { cooldown, replacement, .. }) = weapon;
         pos.translation.y = ship_pos.y + tile_to_f32(2);
-        pos.translation.x = ship_pos.x + if weapon.0 == Side::Left { -2. } else { tile_to_f32(3) + 2. };
+        pos.translation.x = ship_pos.x + if side == Side::Left { -2. } else { tile_to_f32(3) + 2. };
         if let Some(mut just_fired) = just_fired {
-            if just_fired.0 <= weapon.1.replacement { pos.translation.x += if weapon.0 == Side::Left { 1. } else { -1. }; }
+            if just_fired.0 <= replacement { pos.translation.x += side.to_sign_f32(); }
             just_fired.0 += 1;
-            if just_fired.0 >= weapon.1.cooldown {
+            if just_fired.0 >= cooldown {
                 commands.entity(id).remove::<JustFired>();
                 if let Some(e) = just_fired.1 {
                     commands.entity(e).despawn_recursive()
@@ -235,13 +232,11 @@ fn shoot(
 }
 
 fn spawn_shot(shot: Shot, commands: &mut Commands, textures: &Res<Textures>, side: Side, weapon: Weapon, pos: &Transform) -> Entity {
-    let dx = if side == Side::Left { -tile_to_f32(1) - shot.dx } else { tile_to_f32(1) + shot.dx };
-
     let mut shot = shot.clone();
     let mut entity_commands = commands.spawn(shot.with_side(side));
     let entity_commands = entity_commands
         .insert(MainBundle::from_xyz(
-            pos.translation.x + dx,
+            pos.translation.x - (tile_to_f32(1) + shot.dx) * side.to_sign_f32(),
             pos.translation.y + shot.dy,
             z_pos::SHOTS))
         .insert(SolidBody {

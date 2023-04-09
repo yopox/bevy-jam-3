@@ -6,7 +6,7 @@ use bevy::utils::default;
 use bevy_text_mode::{TextModeSpriteSheetBundle, TextModeTextureAtlasSprite};
 use lazy_static::lazy_static;
 
-use crate::util::size::tile_to_f32;
+use size::{HEIGHT, tile_to_f32, WIDTH};
 
 pub mod size {
     pub const SCALE: f32 = 5.;
@@ -126,15 +126,46 @@ pub fn sprite(
 
 pub fn is_oob(transform: &Transform) -> bool {
     let pos = transform.translation;
-    pos.x < -8. || pos.x > tile_to_f32(size::WIDTH) + 8. || pos.y < -8. || pos.y > tile_to_f32(size::HEIGHT) + 8.
+    pos.x < -8. || pos.x > tile_to_f32(WIDTH) + 8. || pos.y < -8. || pos.y > tile_to_f32(HEIGHT) + 8.
 }
 
 pub mod ship {
-    use crate::util::size;
+    use crate::util::size::{HEIGHT, tile_to_f32, WIDTH};
 
     pub const SPEED: f32 = 0.3;
-    pub const INIT_Y: f32 = size::tile_to_f32(size::HEIGHT / 2 - 2);
+    pub const INIT_Y: f32 = tile_to_f32(HEIGHT / 2 - 2);
     pub const MAX_Y: i64 = 190;
     pub const MIN_Y: i64 = -170;
-    pub const LASER_LENGTH: usize = size::WIDTH / 2 - 3;
+    pub const LASER_LENGTH: usize = WIDTH / 2 - 3;
+}
+
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+pub enum Side { Left, Right }
+
+impl Side {
+    pub const fn to_sign_i8(self) -> i8 {
+        match self {
+            Side::Left => 1,
+            Side::Right => -1,
+        }
+    }
+
+    pub const fn to_sign_f32(self) -> f32 {
+        match self {
+            Side::Left => 1.,
+            Side::Right => -1.,
+        }
+    }
+
+    // Here Copy is just to ensure const. If we want to use it on non-Copy types, removing both annotations should be enough
+    pub const fn on_left_right<T>(self, x_left: T, x_right: T) -> T where T: Copy {
+        match self {
+            Side::Left => x_left,
+            Side::Right => x_right,
+        }
+    }
+
+    pub fn of_x(x: usize) -> Self {
+        if x < WIDTH / 2 { Side::Left } else { Side::Right }
+    }
 }

@@ -7,8 +7,8 @@ use crate::{collision, MainBundle, util};
 use crate::collision::{BodyType, Hitbox, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
-use crate::survival::Monster;
-use crate::util::{Palette, z_pos};
+use crate::survival::{Monster, MonsterLastMoved};
+use crate::util::{Palette, Side, z_pos};
 use crate::util::size::tile_to_f32;
 
 #[derive(Debug, EnumIter)]
@@ -50,8 +50,17 @@ impl Monsters {
         }
     }
 
-    fn to_monster(&self) -> Monster {
-        Monster::new(10)
+    fn to_monster(&self, side: Side) -> Monster {
+        match self {
+            Monsters::MagicCandle => Monster::new(5, Vec2::new(1. / 29., 0.), side),
+            Monsters::CashKnight => Monster::new(10, Vec2::new(1. / 31., 0.), side),
+            Monsters::MrCactus => Monster::new(10, Vec2::new(1. / 53., 0.), side),
+            Monsters::Necromancer => Monster::new(5, Vec2::new(1. / 9., 0.), side),
+            Monsters::StarFly => Monster::new(20, Vec2::new(1. / 12., 0.), side),
+            Monsters::SpaceCrab => Monster::new(30, Vec2::new(1. / 37., 0.), side),
+            Monsters::SpaceShrimp => Monster::new(30, Vec2::new(1. / 41., 0.), side),
+            Monsters::SuperEye => Monster::new(100, Vec2::new(1. / 100., 0.), side),
+        }
     }
 }
 
@@ -90,7 +99,8 @@ pub fn spawn_monster(
             width: body_size.x,
             height: body_size.y,
         })
-        .insert(monster.to_monster())
+        .insert(monster.to_monster(Side::of_x(x)))
+        .insert(MonsterLastMoved::default())
         .with_children(|builder| {
             for &(x, y, i, bg, fg, flip, rotation) in monster.sprite() {
                 let mut commands = builder.spawn(

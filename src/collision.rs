@@ -115,8 +115,10 @@ pub fn add_invincible(
         for (b, e) in [(b1, e1), (b2, e2)] {
             if *b == BodyType::Ship || *b == BodyType::Enemy {
                 // TODO: Small freeze for enemies, global freeze if the ship is hit, long global freeze if ship is destroyed
-                if let Ok(Some(_)) = invincible.get(*e) { continue }
-                commands.entity(*e).insert(Invincible(fight::ENEMY_COOLDOWN));
+                if let Ok(Some(_)) = invincible.get(*e) { continue; }
+                if let Some(mut commands) = commands.get_entity(*e) {
+                    commands.insert(Invincible(fight::ENEMY_COOLDOWN));
+                }
                 // info!("Hit!");
             }
         }

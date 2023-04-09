@@ -10,8 +10,9 @@ use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
-use crate::util::{Palette, z_pos};
-use crate::weapons::{monster_looses_life, Side, spawn_weapon, WeaponChanged, Weapons};
+use crate::util::{Palette, Side, z_pos};
+use crate::util::size::{tile_to_f32, WIDTH};
+use crate::weapons::{monster_looses_life, spawn_weapon, WeaponChanged, Weapons};
 
 pub struct SurvivalPlugin;
 
@@ -22,7 +23,7 @@ impl Plugin for SurvivalPlugin {
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
                 (update_score, increase_score, update_life, update_ship_image, update_ship_y,
-                 update_ship_name, monster_looses_life, monster_dies)
+                 update_ship_name, monster_looses_life, monster_dies, move_monsters)
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -103,11 +104,13 @@ fn update_life(
 #[derive(Component)]
 pub struct Monster {
     pub lives: i16,
+    pub speed: Vec2,
+    pub side: Side,
 }
 
 impl Monster {
-    pub fn new(lives: i16) -> Self {
-        Self { lives }
+    pub fn new(lives: i16, speed: Vec2, side: Side) -> Self {
+        Self { lives, speed, side }
     }
 }
 
@@ -119,6 +122,26 @@ pub fn monster_dies(
         if monster.lives <= 0 && invincible.0 == 0 {
             // Should put an animation, freeze something or whatever
             commands.entity(id).despawn_recursive();
+        }
+    }
+}
+
+#[derive(Component, Default)]
+pub struct MonsterLastMoved {
+    ago: usize,
+}
+
+pub fn move_monsters(
+    mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &Monster), Without<Invincible>>,
+) {
+    for (mut monster_pos, mut monster_last_moved, monster) in monsters.iter_mut() {
+        if monster_last_moved.ago as f32 * monster.speed.x > tile_to_f32(1) {
+            monster_last_moved.ago = 0;
+            if monster_pos.translation.x < tile_to_f32(WIDTH / 2 - 2) || tile_to_f32(WIDTH / 2 - 1) < monster_pos.translation.x {
+                monster_pos.translation.x += tile_to_f32(1) * monster.side.to_sign_f32();
+            }
+        } else {
+            monster_last_moved.ago += 1;
         }
     }
 }

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use strum_macros::EnumIter;
 
 use crate::{GameState, MainBundle, util};
-use crate::collision::{BodyType, Contact, Hitbox, SolidBody};
+use crate::collision::{BodyType, Contact, SolidBody};
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
@@ -251,9 +251,7 @@ fn spawn_shot(
         .with_children(|spawn| {
             let mut tile = weapon.shot_tile;
             if side == Side::Right { tile = tile.flip(); }
-            let hitbox = Hitbox::for_tile(tile.index, tile.bg == Palette::Transparent)
-                .expect("Weapons shots should have a hitbox.");
-            spawn.spawn(tile.sprite(0, 0, 0., &textures.mrmotext)).insert(hitbox);
+            spawn.spawn(tile.sprite(0, 0, 0., &textures.mrmotext));
         });
 
     if weapon.shots == Shots::Laser && ship.is_some() {
@@ -327,12 +325,10 @@ fn update_laser_shots(
                         })
                         .with_children(|builder| {
                             let tile = Tiles::Laser.to_tile().with_fg(Palette::LightRed);
-                            let hitbox = Hitbox::for_tile(tile.index, tile.bg == Palette::Transparent)
-                                .expect("Weapons shots should have a hitbox.");
                             for x in 0..util::size::WIDTH {
                                 let mut bundle = tile.sprite(0, 0, 0., &textures.mrmotext);
                                 bundle.transform.translation.x = tile_to_f32(x) * if shot.side == Side::Left { -1. } else { 1. };
-                                builder.spawn(bundle).insert(hitbox);
+                                builder.spawn(bundle);
                             }
                         });
                 }

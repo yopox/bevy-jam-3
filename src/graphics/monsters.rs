@@ -4,7 +4,7 @@ use bevy::sprite::TextureAtlas;
 use strum_macros::EnumIter;
 
 use crate::{collision, MainBundle, util};
-use crate::collision::{BodyType, Hitbox, SolidBody};
+use crate::collision::{BodyType, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
 use crate::survival::{Monster, MonsterLastMoved};
@@ -112,9 +112,6 @@ pub fn spawn_monster(
                         atlas.clone(),
                     )
                 );
-                if let Some(hitbox) = Hitbox::for_tile(i, bg == 0) {
-                    commands.insert(hitbox);
-                }
             }
         })
         .id()

@@ -1,9 +1,10 @@
 use bevy::app::{App, Plugin};
 use bevy::hierarchy::HierarchyQueryExt;
 use bevy::math::{vec2, vec3};
-use bevy::prelude::{Children, Commands, Component, DetectChangesMut, Entity, EventReader, EventWriter, Query, Transform, Visibility, Without};
+use bevy::prelude::{Children, Color, Commands, Component, DetectChangesMut, Entity, EventReader, EventWriter, Query, Transform, Visibility, Without};
 use bevy::sprite::collide_aabb;
 use bevy::utils::default;
+use bevy_text_mode::TextModeTextureAtlasSprite;
 use strum::IntoEnumIterator;
 
 use crate::graphics::monsters::Monsters;
@@ -16,7 +17,7 @@ use crate::weapons::{Weapon, Weapons};
 ///
 /// In order to get a collision we need:
 /// - [SolidBody] on the parent with its size (translation + size / 2. = center)
-/// - [Hitbox] on the children entities
+/// - [TextModeTextureAtlasSprite] on the children entities, and [Hitbox::for_tile] returning a hitbox
 /// A [Contact] event will be sent after the collision.
 /// To pause collisions momentarily, add an [Invincible] component with the desired cooldown.
 pub struct CollisionPlugin;
@@ -144,7 +145,7 @@ pub fn update_invincible(
 pub fn collide(
     colliders: Query<(&SolidBody, &Transform, Entity), Without<Invincible>>,
     children_query: Query<&Children>,
-    hitboxes: Query<(&Hitbox, &Transform), Without<SolidBody>>,
+    hitboxes: Query<(&TextModeTextureAtlasSprite, &Transform), Without<SolidBody>>,
     mut contact: EventWriter<Contact>,
 ) {
     let bodies = &colliders.iter().collect::<Vec<(&SolidBody, &Transform, Entity)>>();
@@ -164,10 +165,16 @@ pub fn collide(
             ).is_none() { continue }
 
             // Collide entity 1 children with entity 2 children
+            let transparent: Color = Palette::Transparent.into();
             for child1 in children_query.iter_descendants(id1) {
-                let Ok((hitbox1, cpos1)) = hitboxes.get(child1) else { continue };
+                let Ok((sprite1, cpos1)) = hitboxes.get(child1) else { continue };
+                let Some(mut hitbox1) = Hitbox::for_tile(sprite1.index, sprite1.bg == transparent) else { continue };
+                hitbox1 = hitbox1.with_flip_and_rotation(sprite1.flip_x, sprite1.rotation);
+
                 for child2 in children_query.iter_descendants(id2) {
-                    let Ok((hitbox2, cpos2)) = hitboxes.get(child2) else { continue };
+                    let Ok((sprite2, cpos2)) = hitboxes.get(child2) else { continue };
+                    let Some(mut hitbox2) = Hitbox::for_tile(sprite2.index, sprite2.bg == transparent) else { continue };
+                    hitbox2 = hitbox2.with_flip_and_rotation(sprite2.flip_x, sprite2.rotation);
 
                     if collide_aabb::collide(
                         vec3(pos1.translation.x + cpos1.translation.x + hitbox1.dx + hitbox1.width / 2.,

@@ -49,7 +49,7 @@ fn setup(
 ) {
     spawn_frame(&mut commands, &textures.mrmotext);
     spawn_ship(&mut commands, &textures.mrmotext);
-    spawn_weapon(Weapons::Finger, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
+    spawn_weapon(Weapons::Laser, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::StarFly, Families::Bats, 23, 14);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceCrab, Families::Color(Palette::Red), 20, 11);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::CashKnight, Families::Bats, 8, 13);

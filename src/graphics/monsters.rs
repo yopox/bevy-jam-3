@@ -98,6 +98,7 @@ pub fn spawn_monster(
             body_type: BodyType::Enemy,
             width: body_size.x,
             height: body_size.y,
+            bottom_right_anchor: false,
         })
         .insert(monster.to_monster(Side::of_x(x)))
         .insert(MonsterLastMoved::default())

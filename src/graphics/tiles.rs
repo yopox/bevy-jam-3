@@ -74,6 +74,9 @@ pub enum Tiles {
     Dash,
     DoubleCannon,
     Dot,
+    LaserCannon,
+    LaserPreparing,
+    Laser,
 }
 
 impl Tiles {
@@ -83,6 +86,9 @@ impl Tiles {
             Tiles::Dash => Tile::from_index(877),
             Tiles::DoubleCannon => Tile::from_index(1021).with_rotation(Rotation::Right),
             Tiles::Dot => Tile::from_index(860),
+            Tiles::LaserCannon => Tile::from_index(451).with_rotation(Rotation::Left),
+            Tiles::LaserPreparing => Tile::from_index(306),
+            Tiles::Laser => Tile::from_index(336),
         }
     }
 }

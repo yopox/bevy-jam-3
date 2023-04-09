@@ -25,6 +25,7 @@ pub mod z_pos {
     pub const ENEMIES: f32 = 2.;
     pub const SHOTS: f32 = 4.;
     pub const RAILS: f32 = 6.;
+    pub const WEAPONS: f32 = 7.;
     pub const MACHINE: f32 = 8.;
     pub const FRAME: f32 = 10.;
     pub const GUI: f32 = 12.;
@@ -32,6 +33,8 @@ pub mod z_pos {
 
 pub mod fight {
     pub const ENEMY_COOLDOWN: usize = 120;
+    pub const LASER_LOADING: usize = 30;
+    pub const LASER_FIRING: usize = 45;
 }
 
 pub mod background {

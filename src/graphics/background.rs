@@ -53,20 +53,25 @@ pub fn spawn_rails(
     }
 }
 
-fn spawn_rail(commands: &mut Commands, atlas: &Handle<TextureAtlas>, x: usize, y: usize) {
+fn spawn_rail_f32(commands: &mut Commands, atlas: &Handle<TextureAtlas>, x: usize, y: usize, dy: f32) {
     let mut bundle = util::sprite(
-            if rand::random::<f32>() < 0.1 { 299 } else { 331 }, x + 15, y, z_pos::RAILS,
-            Palette::Transparent, Palette::Gravel,
-            x == 1, 0,
-            atlas.clone(),
-        );
+        if rand::random::<f32>() < 0.1 { 299 } else { 331 }, x + 15, y, z_pos::RAILS,
+        Palette::Transparent, Palette::Gravel,
+        x == 1, 0,
+        atlas.clone(),
+    );
     bundle.sprite.alpha = util::background::ALPHA;
+    bundle.transform.translation.y += dy;
 
     commands
         .spawn(bundle)
         .insert(Rail(x))
         .insert(NoAnimation)
         .insert(Background);
+}
+
+fn spawn_rail(commands: &mut Commands, atlas: &Handle<TextureAtlas>, x: usize, y: usize) {
+    spawn_rail_f32(commands, atlas, x, y, 0.);
 }
 
 #[derive(Resource)]
@@ -94,7 +99,7 @@ fn update_background(
         if let Some(rail) = rail {
             if pos.translation.y <= -8. {
                 commands.entity(id).despawn_recursive();
-                spawn_rail(&mut commands, &textures.mrmotext, rail.0, size::HEIGHT);
+                spawn_rail_f32(&mut commands, &textures.mrmotext, rail.0, size::HEIGHT, pos.translation.y + 8.);
             }
         } else {
             if pos.translation.y < -120. {

@@ -36,6 +36,7 @@ pub mod z_pos {
 
 pub mod fight {
     pub const ENEMY_COOLDOWN: usize = 120;
+    pub const MONSTERS_FREEZE: usize = 40;
     pub const LASER_LOADING: usize = 30;
     pub const LASER_FIRING: usize = 45;
 }

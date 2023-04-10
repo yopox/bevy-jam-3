@@ -205,9 +205,10 @@ pub struct MonsterLastMoved {
 }
 
 pub fn move_monsters(
-    mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &Monster), Without<Invincible>>,
+    mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &Monster, Option<&Invincible>)>,
 ) {
-    for (mut monster_pos, mut monster_last_moved, monster) in monsters.iter_mut() {
+    for (mut monster_pos, mut monster_last_moved, monster, invincible) in monsters.iter_mut() {
+        if invincible.is_some() && invincible.unwrap().0 > util::fight::ENEMY_COOLDOWN - util::fight::MONSTERS_FREEZE { continue; }
         monster_pos.translation = monster.compute_translation(monster_last_moved.ago as f32);
         monster_last_moved.ago += 1;
     }

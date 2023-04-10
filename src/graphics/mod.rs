@@ -14,6 +14,7 @@ pub mod monsters;
 pub mod sprites;
 mod background_sprites;
 mod animation;
+mod transition;
 
 pub struct GraphicsPlugin;
 

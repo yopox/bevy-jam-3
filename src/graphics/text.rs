@@ -83,6 +83,9 @@ pub fn glyph_index(c: char) -> Option<usize> {
     match c {
         '•' => Some(478),
         '°' => Some(439),
+        '↔' => Some(79),
+        '→' => Some(15),
+        '←' => Some(47),
         'a'..='z' => Some(c as usize - 'a' as usize + 897),
         '!'..='_' => Some(c as usize - '!' as usize + 865),
         _ => None,

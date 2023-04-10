@@ -29,6 +29,7 @@ pub mod z_pos {
     pub const MACHINE: f32 = 8.;
     pub const FRAME: f32 = 10.;
     pub const GUI: f32 = 12.;
+    pub const CHOOSE_BORDER: f32 = 14.;
 }
 
 pub mod fight {
@@ -46,6 +47,17 @@ pub mod background {
 
 pub mod misc {
     pub const ANIMATION_INTERVAL: usize = 80;
+}
+
+pub mod choose {
+    pub const TEXT_SELECT: &'static str = " Press ← or → to select";
+    pub const TEXT_CHOOSE_LEFT: &'static str = "Press ← again to confirm";
+    pub const TEXT_CHOOSE_RIGHT: &'static str = "Press → again to confirm";
+    pub const BORDER_WIDTH: usize = 11;
+    pub const BORDER_HEIGHT: usize = 10;
+    pub const BORDER_X: usize = 3;
+    pub const BORDER_Y: usize = 4;
+    pub const SIDE_Y: usize = 15;
 }
 
 #[derive(Copy, Clone, Eq, PartialEq)]

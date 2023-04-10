@@ -1,3 +1,5 @@
+use std::cmp::max;
+
 use bevy::prelude::*;
 use rand::RngCore;
 use strum::IntoEnumIterator;
@@ -13,7 +15,7 @@ use crate::util::size::tile_to_f32;
 pub struct BackgroundPlugin;
 
 #[derive(Component)]
-struct Background;
+pub struct Background;
 
 impl Plugin for BackgroundPlugin {
     fn build(&self, app: &mut App) {
@@ -40,7 +42,7 @@ fn setup(
 #[derive(Component)]
 struct Rail(usize);
 
-fn spawn_rails(
+pub fn spawn_rails(
     commands: &mut Commands,
     atlas: &Handle<TextureAtlas>
 ) {
@@ -80,9 +82,9 @@ fn update_background(
     timer.0 -= 1;
     timer.1 -= 1;
     if timer.0 <= 0 {
-        timer.0 = spawn_layout(&mut commands, Side::Left, util::background::LAYOUT_HEIGHT, &textures.mrmotext);
+        timer.0 = spawn_layout(&mut commands, Side::Left, util::background::LAYOUT_HEIGHT as isize, &textures.mrmotext);
     } else if timer.1 <= 0 {
-        timer.1 = spawn_layout(&mut commands, Side::Right, util::background::LAYOUT_HEIGHT, &textures.mrmotext);
+        timer.1 = spawn_layout(&mut commands, Side::Right, util::background::LAYOUT_HEIGHT as isize, &textures.mrmotext);
     }
 
     // Move and despawn entities
@@ -102,10 +104,10 @@ fn update_background(
     }
 }
 
-fn spawn_layout(
+pub fn spawn_layout(
     commands: &mut Commands,
     side: Side,
-    dy: usize,
+    dy: isize,
     atlas: &Handle<TextureAtlas>,
 ) -> isize {
     let layout = Layouts::random();
@@ -116,7 +118,7 @@ fn spawn_layout(
         commands
             .spawn(MainBundle::from_xyz(
                 tile_to_f32(x + if side == Side::Left { 2 } else { 17 }),
-                tile_to_f32(y + 3 + dy as usize),
+                tile_to_f32(max(y as isize + 3 + dy, 0) as usize),
                 z_pos::BACKGROUND
             ))
             .insert(Background)

@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_text_mode::TextModePlugin;
 
+use crate::choose::ChoosePlugin;
 use crate::collision::CollisionPlugin;
 use crate::graphics::GraphicsPlugin;
 use crate::loading::LoadingPlugin;
@@ -17,6 +18,7 @@ mod survival;
 mod weapons;
 mod title;
 mod collision;
+mod choose;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 enum GameState {
@@ -49,6 +51,7 @@ fn main() {
         .add_plugin(TextModePlugin)
         .add_plugin(CollisionPlugin)
         .add_plugin(GraphicsPlugin)
+        .add_plugin(ChoosePlugin)
         .add_plugin(LoadingPlugin)
         .add_plugin(SurvivalPlugin)
         .add_plugin(WeaponPlugin)

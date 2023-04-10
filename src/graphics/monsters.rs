@@ -8,7 +8,7 @@ use strum_macros::EnumIter;
 use crate::{collision, MainBundle, util};
 use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
-use crate::graphics::sprites::TILE;
+use crate::graphics::sprites::{RTEMO_PALETTE, TILE};
 use crate::util::{Palette, Side, z_pos};
 use crate::util::choose::{BORDER_HEIGHT, BORDER_WIDTH};
 use crate::util::size::{HEIGHT, tile_to_f32, WIDTH};
@@ -32,6 +32,11 @@ pub enum Monsters {
     SpaceCrab,
     SpaceShrimp,
     SuperEye,
+    Skulleton,
+    Bat,
+    Shroom,
+    Fox,
+    Blob,
 }
 
 impl Monsters {
@@ -45,19 +50,29 @@ impl Monsters {
             Monsters::SpaceCrab => &sprites::SPACE_CRAB,
             Monsters::SpaceShrimp => &sprites::SPACE_SHRIMP,
             Monsters::SuperEye => &sprites::SUPER_EYE,
+            Monsters::Skulleton => &sprites::SKULLETON,
+            Monsters::Bat => &sprites::BAT,
+            Monsters::Shroom => &sprites::SHROOM,
+            Monsters::Fox => &sprites::FOX,
+            Monsters::Blob => &sprites::BLOB,
+
+
+
+
+
         }
     }
 
     fn palette(&self) -> Vec<Palette> {
         match self {
             Monsters::CashKnight => vec![Palette::Transparent, Palette::Black, Palette::Gold],
-            Monsters::MagicCandle => vec![Palette::Transparent, Palette::Black, Palette::LightGold, Palette::Red],
             Monsters::MrCactus => sprites::RTEMO_PALETTE.iter().map(|p| *p).collect::<Vec<Palette>>(),
             Monsters::Necromancer => vec![Palette::Transparent, Palette::Black, Palette::LightGold],
             Monsters::StarFly => vec![Palette::Transparent, Palette::Black, Palette::Black],
             Monsters::SpaceCrab => vec![Palette::Transparent, Palette::Black, Palette::Lava],
             Monsters::SpaceShrimp => vec![Palette::Transparent, Palette::Black, Palette::Blue],
             Monsters::SuperEye => vec![Palette::Transparent, Palette::Black, Palette::Blue],
+            Monsters::Skulleton | Monsters::Bat | Monsters::MagicCandle | Monsters::Shroom | Monsters::Fox | Monsters::Blob => RTEMO_PALETTE.iter().map(|p| *p).collect::<Vec<Palette>>()
         }
     }
 
@@ -70,7 +85,7 @@ impl Monsters {
             Monsters::StarFly => Monster::new_with_random_pos(20, MonsterPath::Sinusoid { speed_x: 1. / 12., frequency_y: 1. / 12., amplitude_y: tile_to_f32(3) }, side),
             Monsters::SpaceCrab => Monster::new_with_random_pos(30, MonsterPath::Sinusoid { speed_x: 1. / 37., frequency_y: 1. / 37., amplitude_y: tile_to_f32(4) }, side),
             Monsters::SpaceShrimp => Monster::new_with_random_pos(30, MonsterPath::Linear(Vec2::new(1. / 41., 0.)), side),
-            Monsters::SuperEye => Monster::new_with_random_pos(100, MonsterPath::Linear(Vec2::new(1. / 100., 0.)), side),
+            _ => Monster::new_with_random_pos(100, MonsterPath::Linear(Vec2::new(1. / 100., 0.)), side),
         }
     }
 }

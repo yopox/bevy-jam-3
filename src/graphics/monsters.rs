@@ -1,8 +1,7 @@
 use bevy::asset::Handle;
+use bevy::math::vec2;
 use bevy::prelude::*;
-use bevy::prelude::system_adapter::new;
 use bevy::sprite::TextureAtlas;
-use rand::random;
 use strum_macros::EnumIter;
 
 use crate::{collision, MainBundle, util};
@@ -10,19 +9,9 @@ use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::{RTEMO_PALETTE, TILE};
 use crate::util::{Palette, Side, z_pos};
-use crate::util::choose::{BORDER_HEIGHT, BORDER_WIDTH};
-use crate::util::size::{HEIGHT, tile_to_f32, WIDTH};
+use crate::util::size::{tile_to_f32, WIDTH};
 
-fn random_pos_on_side(side: Side) -> Vec2 {
-    let x = match side {
-        Side::Left => tile_to_f32(2),
-        Side::Right => tile_to_f32(WIDTH - 2),
-    };
-    let y = random::<f32>() * tile_to_f32(HEIGHT - 2 * 3) + tile_to_f32(3);
-    Vec2 { x, y }
-}
-
-#[derive(Debug, EnumIter)]
+#[derive(Debug, EnumIter, Copy, Clone)]
 pub enum Monsters {
     CashKnight,
     MagicCandle,
@@ -76,20 +65,21 @@ impl Monsters {
         }
     }
 
-    fn to_monster(&self, side: Side) -> Monster {
+    fn hp(&self) -> i16 {
         match self {
-            Monsters::MagicCandle => Monster::new_with_random_pos(5, MonsterPath::Linear(Vec2::new(1. / 29., 0.)), side),
-            Monsters::CashKnight => Monster::new_with_random_pos(10, MonsterPath::Linear(Vec2::new(1. / 31., 0.)), side),
-            Monsters::MrCactus => Monster::new_with_random_pos(10, MonsterPath::Linear(Vec2::new(1. / 53., 0.)), side),
-            Monsters::Necromancer => Monster::new_with_random_pos(5, MonsterPath::Linear(Vec2::new(1. / 9., 0.)), side),
-            Monsters::StarFly => Monster::new_with_random_pos(20, MonsterPath::Sinusoid { speed_x: 1. / 12., frequency_y: 1. / 12., amplitude_y: tile_to_f32(3) }, side),
-            Monsters::SpaceCrab => Monster::new_with_random_pos(30, MonsterPath::Sinusoid { speed_x: 1. / 37., frequency_y: 1. / 37., amplitude_y: tile_to_f32(4) }, side),
-            Monsters::SpaceShrimp => Monster::new_with_random_pos(30, MonsterPath::Linear(Vec2::new(1. / 41., 0.)), side),
-            _ => Monster::new_with_random_pos(100, MonsterPath::Linear(Vec2::new(1. / 100., 0.)), side),
+            Monsters::CashKnight => 10,
+            Monsters::MagicCandle => 4,
+            Monsters::MrCactus => 8,
+            Monsters::Necromancer => 6,
+            Monsters::StarFly => 2,
+            Monsters::SpaceCrab => 3,
+            Monsters::SpaceShrimp => 4,
+            Monsters::SuperEye => 25,
         }
     }
 }
 
+#[derive(Copy, Clone)]
 pub enum Families {
     Bats,
     Pharaoh,
@@ -109,27 +99,28 @@ impl Families {
 pub fn spawn_monster(
     commands: &mut Commands,
     atlas: &Handle<TextureAtlas>,
-    monster: Monsters,
+    monster: Monster,
     family: Families,
-    x: usize,
-    y: usize,
+    x: f32,
+    y: f32,
 ) -> Entity {
-    let mut palette = monster.palette();
+    let mut palette = monster.kind.palette();
     palette[1] = family.color();
 
-    let body_size = collision::body_size(monster.sprite());
+    let sprite = monster.kind.sprite();
+    let body_size = collision::body_size(sprite);
     commands
-        .spawn(MainBundle::from_xyz(tile_to_f32(x), tile_to_f32(y), z_pos::ENEMIES))
+        .spawn(MainBundle::from_xyz(x, y, z_pos::ENEMIES))
         .insert(SolidBody {
             body_type: BodyType::Enemy,
             width: body_size.x,
             height: body_size.y,
             bottom_right_anchor: false,
         })
-        .insert(monster.to_monster(Side::of_x(x)))
+        .insert(monster.clone())
         .insert(MonsterLastMoved::default())
         .with_children(|builder| {
-            for &(x, y, i, bg, fg, flip, rotation) in monster.sprite() {
+            for &(x, y, i, bg, fg, flip, rotation) in sprite {
                 builder.spawn(
                     util::sprite(
                         i, x, y, 0.,
@@ -143,6 +134,7 @@ pub fn spawn_monster(
         .id()
 }
 
+#[derive(Copy, Clone)]
 pub enum MonsterPath {
     /// Stays at the same position
     Static,
@@ -152,7 +144,7 @@ pub enum MonsterPath {
     Sinusoid {
         speed_x: f32,
         frequency_y: f32,
-        amplitude_y: f32,
+        amplitude_y: usize,
     },
 }
 
@@ -163,15 +155,16 @@ impl MonsterPath {
             MonsterPath::Linear(v) => init_pos + v * t * side.to_sign_f32(),
             MonsterPath::Sinusoid { speed_x, frequency_y, amplitude_y } => {
                 let dx = speed_x * t * side.to_sign_f32();
-                let dy = amplitude_y * (t * frequency_y).sin();
+                let dy = tile_to_f32(amplitude_y) * (t * frequency_y).sin();
                 Vec2 { x: init_pos.x + dx, y: init_pos.y + dy }
             }
         }
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Copy, Clone)]
 pub struct Monster {
+    pub kind: Monsters,
     pub lives: i16,
     pub path: MonsterPath,
     pub init_pos: Vec2,
@@ -179,12 +172,8 @@ pub struct Monster {
 }
 
 impl Monster {
-    pub fn new(lives: i16, path: MonsterPath, init_pos: Vec2, side: Side) -> Self {
-        Self { lives, path, init_pos, side }
-    }
-
-    pub fn new_with_random_pos(lives: i16, path: MonsterPath, side: Side) -> Self {
-        Self::new(lives, path, random_pos_on_side(side), side)
+    pub fn new(kind: Monsters, path: MonsterPath, x: f32, y: f32, side: Side) -> Self {
+        Self { kind, lives: kind.hp(), path, init_pos: vec2(x, y), side }
     }
 
     pub fn compute_translation(&self, t: f32) -> Vec3 {

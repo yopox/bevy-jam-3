@@ -2,12 +2,13 @@ use std::cmp::{max, min};
 
 use bevy::prelude::*;
 
-use crate::GameState;
+use crate::{GameState, rounds};
 use crate::graphics::text;
-use crate::graphics::monsters::{Families, monster_dies, Monsters, move_monsters, spawn_monster};
+use crate::graphics::monsters::{monster_dies, move_monsters};
 use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
+use crate::rounds::{CurrentRound, Rounds};
 use crate::util::{Palette, Side, z_pos};
 use crate::weapons::{monster_looses_life, spawn_weapon, WeaponChanged, Weapons};
 
@@ -20,7 +21,7 @@ impl Plugin for SurvivalPlugin {
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
                 (update_score, increase_score, update_life, update_ship_image, update_ship_y,
-                 update_ship_name, monster_looses_life, monster_dies, move_monsters)
+                 update_ship_name, monster_looses_life, monster_dies, move_monsters, rounds::update)
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -46,14 +47,6 @@ fn setup(
 ) {
     spawn_ship(&mut commands, &textures.mrmotext);
     spawn_weapon(Weapons::Laser, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::StarFly, Families::Bats, 23, 14);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceCrab, Families::Color(Palette::Red), 20, 11);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::CashKnight, Families::Bats, 8, 13);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SpaceShrimp, Families::Color(Palette::LightBlue), 22, 7);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::SuperEye, Families::Pharaoh, 5, 5);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::MagicCandle, Families::Color(Palette::Cactus), 11, 5);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::Necromancer, Families::Color(Palette::Red), 26, 5);
-    spawn_monster(&mut commands, &textures.mrmotext, Monsters::MrCactus, Families::Color(Palette::Red), 5, 11);
     spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
 
     commands
@@ -70,6 +63,9 @@ fn setup(
     commands
         .spawn(text("]", 28, 1, z_pos::GUI))
         .insert(SurvivalUI);
+
+    // Round
+    commands.insert_resource(CurrentRound::from(Rounds::random()));
 }
 
 fn increase_score(

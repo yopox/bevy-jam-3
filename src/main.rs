@@ -19,6 +19,7 @@ mod weapons;
 mod title;
 mod collision;
 mod choose;
+mod rounds;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum GameState {

@@ -9,7 +9,7 @@ use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::{RTEMO_PALETTE, TILE};
 use crate::util::{Palette, Side, z_pos};
-use crate::util::size::{tile_to_f32, WIDTH};
+use crate::util::size::tile_to_f32;
 
 #[derive(Debug, EnumIter, Copy, Clone)]
 pub enum Monsters {
@@ -203,11 +203,7 @@ pub fn move_monsters(
     mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &Monster), Without<Invincible>>,
 ) {
     for (mut monster_pos, mut monster_last_moved, monster) in monsters.iter_mut() {
-        if monster_pos.translation.x < tile_to_f32(WIDTH / 2 - 2) || tile_to_f32(WIDTH / 2 - 1) < monster_pos.translation.x {
-            monster_pos.translation = monster.compute_translation(monster_last_moved.ago as f32);
-            monster_last_moved.ago += 1;
-        } else {
-            // We should do something here, like loose life or whatever.
-        }
+        monster_pos.translation = monster.compute_translation(monster_last_moved.ago as f32);
+        monster_last_moved.ago += 1;
     }
 }

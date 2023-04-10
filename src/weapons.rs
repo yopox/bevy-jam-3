@@ -8,6 +8,7 @@ use crate::graphics::ship::Ship;
 use crate::graphics::tiles;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
+use crate::survival::SurvivalUI;
 use crate::util::{is_oob, Palette, Side, z_pos};
 use crate::util::size::tile_to_f32;
 
@@ -193,6 +194,7 @@ pub fn spawn_weapon(
     if side == Side::Right { weapon.tile.flip = !weapon.tile.flip };
     commands
         .spawn(ActiveWeapon { side, weapon })
+        .insert(SurvivalUI)
         .insert(Weapon::get_solid_body())
         .insert(Transform::from_xyz(0., 0., z_pos::WEAPONS))
         .insert(GlobalTransform::default())
@@ -277,6 +279,7 @@ fn spawn_shot(
     let mut shot = shot.clone();
     let mut entity_commands = commands.spawn(shot.with_side(side));
     let entity_commands = entity_commands
+        .insert(SurvivalUI)
         .insert(MainBundle::from_xyz(
             pos.translation.x - (tile_to_f32(1) + shot.dx) * side.to_sign_f32(),
             pos.translation.y + shot.dy,

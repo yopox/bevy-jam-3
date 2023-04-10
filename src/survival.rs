@@ -3,11 +3,12 @@ use std::cmp::{max, min};
 use bevy::prelude::*;
 
 use crate::{GameState, rounds};
-use crate::collision::add_invincible;
+use crate::collision::{add_invincible, collide, Invincible};
 use crate::graphics::monsters::{monster_dies, move_monsters};
-use crate::graphics::ship::{monsters_kill, ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
+use crate::graphics::ship::{monsters_kill, Ship, ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
+use crate::graphics::transition::Transition;
 use crate::loading::Textures;
 use crate::rounds::CurrentRound;
 use crate::util::{Palette, Side, z_pos};
@@ -23,7 +24,7 @@ impl Plugin for SurvivalPlugin {
             .add_systems(
                 (update_score, increase_score, update_life, update_ship_image, update_ship_y,
                  update_ship_name, monster_looses_life, monster_dies, move_monsters, rounds::update,
-                 monsters_kill.after(add_invincible))
+                 monsters_kill.after(add_invincible).after(collide), game_over.after(add_invincible))
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -31,10 +32,10 @@ impl Plugin for SurvivalPlugin {
 }
 
 #[derive(Component)]
-struct SurvivalUI;
+pub struct SurvivalUI;
 
 #[derive(Component)]
-struct Score(i64);
+pub struct Score(i64);
 
 #[derive(Component)]
 pub struct Life(pub(crate) i8);
@@ -95,4 +96,23 @@ fn update_life(
     }
 }
 
-fn cleanup() {}
+fn game_over(
+    mut commands: Commands,
+    lives: Query<&Life, Changed<Life>>,
+    ship: Query<&Ship, Without<Invincible>>,
+) {
+    if let Ok(&Life(lives)) = lives.get_single() {
+        if lives <= 0 && ship.get_single().is_ok() {
+            commands.insert_resource(Transition::to(GameState::Title));
+        }
+    }
+}
+
+fn cleanup(
+    mut commands: Commands,
+    query: Query<Entity, With<SurvivalUI>>,
+) {
+    for e in query.iter() {
+        commands.entity(e).despawn_recursive();
+    }
+}

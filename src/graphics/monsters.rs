@@ -10,6 +10,7 @@ use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::{RTEMO_PALETTE, TILE};
 use crate::rounds::{CurrentRound, MovementTypes};
+use crate::survival::SurvivalUI;
 use crate::util::{Palette, Side, z_pos};
 use crate::util::size::{tile_to_f32, WIDTH};
 
@@ -139,6 +140,7 @@ pub fn spawn_monster(
             height: body_size.y,
             bottom_right_anchor: false,
         })
+        .insert(SurvivalUI)
         .insert(monster.clone())
         .insert(MonsterLastMoved::default())
         .with_children(|builder| {

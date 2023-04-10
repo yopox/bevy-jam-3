@@ -1,7 +1,7 @@
 use bevy::app::{App, Plugin};
 use bevy::hierarchy::HierarchyQueryExt;
 use bevy::math::{vec2, vec3};
-use bevy::prelude::{Children, Color, Commands, Component, DetectChangesMut, Entity, EventReader, EventWriter, Query, Transform, Visibility, Without};
+use bevy::prelude::*;
 use bevy::sprite::collide_aabb;
 use bevy::utils::default;
 use bevy_text_mode::TextModeTextureAtlasSprite;
@@ -26,7 +26,7 @@ impl Plugin for CollisionPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_event::<Contact>()
-            .add_systems((collide, update_invincible, add_invincible));
+            .add_systems((collide.before(add_invincible), add_invincible, update_invincible));
     }
 }
 
@@ -64,7 +64,7 @@ impl BodyType {
 pub struct Contact(pub (BodyType, Entity), pub (BodyType, Entity));
 
 /// Excludes the entity from collision detection.
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Invincible(pub usize);
 
 #[derive(Component, Default, Clone, Copy)]
@@ -106,7 +106,7 @@ impl Hitbox {
     }
 }
 
-pub fn body_size(sprite: &[TILE]) -> bevy::math::Vec2 {
+pub fn body_size(sprite: &[TILE]) -> Vec2 {
     let x = *sprite.iter().map(|(x, _, _, _, _, _, _)| x).max().unwrap_or(&0);
     let y = *sprite.iter().map(|(_, y, _, _, _, _, _)| y).max().unwrap_or(&0);
     return vec2(size::tile_to_f32(x + 1), size::tile_to_f32(y + 1));

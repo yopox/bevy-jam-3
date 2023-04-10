@@ -2,12 +2,12 @@ use bevy::prelude::*;
 use bevy_text_mode::TextModeTextureAtlasSprite;
 
 use crate::{collision, MainBundle, util};
-use crate::collision::{BodyType, Contact, SolidBody};
+use crate::collision::{BodyType, Contact, Invincible, SolidBody};
 use crate::graphics::animation::NoAnimation;
 use crate::graphics::monsters::Monster;
 use crate::graphics::sprites;
 use crate::graphics::text::glyph_index;
-use crate::survival::Life;
+use crate::survival::{Life, SurvivalUI};
 use crate::util::{ship, Side, size, z_pos};
 use crate::util::size::tile_to_f32;
 use crate::weapons::WeaponChanged;
@@ -31,6 +31,7 @@ pub fn spawn_ship(
     let colors = sprites::RTEMO_PALETTE;
     commands
         .spawn(Ship { y: 0 })
+        .insert(SurvivalUI)
         .insert(MainBundle::from_xyz(
             tile_to_f32(size::WIDTH) / 2. - tile_to_f32(2),
             ship::INIT_Y,
@@ -99,7 +100,7 @@ pub fn update_ship_name(
 pub fn monsters_kill(
     mut life: Query<&mut Life>,
     mut contacts: EventReader<Contact>,
-    mut monsters: Query<&mut Monster>,
+    mut monsters: Query<&mut Monster, Without<Invincible>>,
 ) {
     for Contact((body1, id1), (body2, id2)) in contacts.iter() {
         match ((body1, id1), (body2, id2)) {

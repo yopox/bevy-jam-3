@@ -6,6 +6,7 @@ use crate::graphics::sprites::TILE;
 use crate::util::background::LAYOUT_HEIGHT;
 
 pub enum ElementSize {
+    Small,
     Big,
     FxF,
     Ground,
@@ -18,13 +19,15 @@ pub enum ElementSize {
 impl ElementSize {
     pub fn get_sprite(&self) -> &[TILE] {
         match self {
+            ElementSize::Small => [SROCK.as_ref(), SGRASS.as_ref(), SLAVA.as_ref(), SFLOWER.as_ref(), SMUSH.as_ref(), SBUSH.as_ref()]
+                .choose(&mut rand::thread_rng()).unwrap(),
             ElementSize::Big => [LAVA.as_ref(), CRACK.as_ref(), FOREST.as_ref(), MOUNT.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
             ElementSize::FxF => [ROCK.as_ref(), GRAVE.as_ref(),GRASS2.as_ref(), FLOWER2.as_ref(), ROCKS.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
             ElementSize::Ground => [GROUND.as_ref(), GROUND2.as_ref(), GROUND3.as_ref(), GROUND4.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
-            ElementSize::Elements => [CHARIOT.as_ref(), GRAVE.as_ref(), SKULL_SIGN.as_ref(), CHARIOT.as_ref()]
+            ElementSize::Elements => [CHARIOT.as_ref(), GRAVE.as_ref(), SKULL_SIGN.as_ref(), CHARIOT.as_ref(), CAMPFIRE.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
             ElementSize::Medium => [LAVA_LAKE.as_ref(), LAVA2.as_ref(), MUSH.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
@@ -44,62 +47,57 @@ pub enum Layouts {
     Layout3,
     Layout4,
     Layout5,
-    Layout6,
 }
 
 impl Layouts {
     pub fn random() -> Self {
         Self::iter().choose(&mut rand::thread_rng()).unwrap()
-        //Layouts::Layout4
     }
 
     pub fn get_elements(&self) -> Vec<(ElementSize, usize, usize)> {
         match self {
             Layouts::Layout1 => vec![
-                (ElementSize::Big, 1, 0),
-                (ElementSize::FxF, 7, 9),
-                (ElementSize::Ground, 6, 3),
-                (ElementSize::TxT, 9, 1),
+                (ElementSize::Big, 2, 0),
+                (ElementSize::FxF, 7, 10),
+                (ElementSize::Ground, 8, 5),
+                (ElementSize::TxT, 9, 2),
+                (ElementSize::Small, 0, 13),
             ],
 
             Layouts::Layout2 | Layouts::Layout2Clone => vec![
                 (ElementSize::FxF, 2, 9),
                 (ElementSize::Ground, 3, 5),
                 (ElementSize::Ground, 5, 7),
-                (ElementSize::Ground, 1, 7),
+                (ElementSize::Ground, 1, 9),
                 (ElementSize::Elements, 1, 1),
                 (ElementSize::TxT, 7, 0),
                 (ElementSize::TxT, 9, 4),
+                (ElementSize::Small, 9, 10),
             ],
 
             Layouts::Layout3 => vec![
-                (ElementSize::Big, 1, 0),
-                (ElementSize::FxF, 7, 10),
-                (ElementSize::Ground, 7, 3),
-                (ElementSize::TxT, 7, 7),
+                (ElementSize::Big, 4, 0),
+                (ElementSize::FxF, 8, 11),
+                (ElementSize::Ground, 7, 0),
+                (ElementSize::TxT, 1, 7),
+                (ElementSize::Small, 0, 13),
+                (ElementSize::Small, 0, 1),
             ],
 
             Layouts::Layout4 => vec![
                 (ElementSize::Medium, 4, 8),
                 (ElementSize::FxF, 1, 5),
-                (ElementSize::Ground, 6, 5),
-                (ElementSize::TxT, 8, 3),
+                (ElementSize::Ground, 6, 3),
                 (ElementSize::TxT, 0, 0),
+                (ElementSize::Small, 8, 0),
             ],
 
             Layouts::Layout5 => vec![
-                (ElementSize::Horizontal, 3, 8),
-                (ElementSize::FxF, 0, 2),
+                (ElementSize::Horizontal, 3, 10),
                 (ElementSize::Ground, 7, 6),
                 (ElementSize::TxT, 9, 2),
-                (ElementSize::TxT, 4, 0),
-            ],
-
-            Layouts::Layout6 => vec![
-                (ElementSize::FxF, 0, 2),
-                (ElementSize::FxF, 7, 6),
-                (ElementSize::FxF, 9, 2),
-                (ElementSize::FxF, 4, 0),
+                (ElementSize::Elements, 1, 1),
+                (ElementSize::Small, 1, 13),
             ],
 
             // Layouts::Layout2 => vec![
@@ -109,6 +107,83 @@ impl Layouts {
         }
     }
 }
+
+// 2x2
+const SBUSH: [TILE ; 4] = [
+    (0, 1, 866, 0, 17, false, 0),
+    (1, 1, 0, 0, 11, false, 0),
+    (0, 0, 10, 0, 12, false, 3),
+    (1, 0, 8, 0, 12, true, 0),
+];
+
+// 2x2
+const SGRASS: [TILE ; 4] =[
+    (0, 1, 463, 0, 12, false, 0),
+    (1, 1, 0, 0, 11, false, 0),
+    (0, 0, 0, 0, 12, false, 0),
+    (1, 0, 458, 0, 12, false, 0),
+];
+
+// 2x2
+const SLAVA: [TILE ; 4] = [
+    (0, 1, 401, 0, 2, false, 0),
+    (1, 1, 293, 0, 14, false, 1),
+    (0, 0, 0, 0, 12, false, 0),
+    (1, 0, 397, 0, 2, false, 0),
+];
+
+// 2x2
+const SMUSH: [TILE ; 4] =[
+    (0, 1, 0, 0, 14, false, 0),
+    (1, 1, 724, 0, 3, false, 0),
+    (0, 0, 844, 0, 4, false, 0),
+    (1, 0, 0, 0, 14, false, 0),
+];
+
+// 2x2
+const SFLOWER: [TILE ; 9] = [
+    (0, 2, 0, 0, 1, false, 0),
+    (1, 2, 0, 0, 1, false, 0),
+    (2, 2, 396, 0, 17, false, 0),
+    (0, 1, 462, 0, 11, false, 0),
+    (1, 1, 0, 0, 12, false, 0),
+    (2, 1, 462, 0, 12, true, 2),
+    (0, 0, 463, 0, 12, false, 0),
+    (1, 0, 0, 0, 12, true, 2),
+    (2, 0, 0, 0, 1, false, 0),
+];
+
+// 2x2
+const SROCK: [TILE ; 4] = [
+    (0, 1, 293, 0, 3, false, 0),
+    (1, 1, 401, 0, 4, false, 0),
+    (0, 0, 397, 0, 4, false, 0),
+    (1, 0, 401, 0, 3, true, 3),
+];
+
+// 4x5
+const CAMPFIRE: [TILE ; 20] = [
+    (0, 4, 330, 0, 4, false, 0),
+    (1, 4, 0, 0, 3, false, 3),
+    (2, 4, 397, 0, 3, false, 2),
+    (3, 4, 269, 0, 2, false, 0),
+    (0, 3, 0, 0, 4, false, 2),
+    (1, 3, 0, 0, 3, false, 3),
+    (2, 3, 299, 0, 3, false, 2),
+    (3, 3, 117, 0, 4, false, 0),
+    (0, 2, 458, 0, 12, false, 0),
+    (1, 2, 293, 0, 3, false, 0),
+    (2, 2, 331, 0, 3, false, 2),
+    (3, 2, 0, 0, 4, false, 0),
+    (0, 1, 0, 0, 4, false, 0),
+    (1, 1, 268, 0, 2, false, 0),
+    (2, 1, 331, 0, 3, false, 2),
+    (3, 1, 458, 0, 12, false, 0),
+    (0, 0, 0, 0, 4, false, 0),
+    (1, 0, 117, 0, 4, false, 0),
+    (2, 0, 299, 0, 3, false, 0),
+    (3, 0, 0, 0, 4, false, 0),
+];
 
 // 10x6
 const SIGNCRACK: [TILE ; 60] =[

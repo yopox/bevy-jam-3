@@ -2,14 +2,16 @@ use bevy::asset::Handle;
 use bevy::math::vec2;
 use bevy::prelude::*;
 use bevy::sprite::TextureAtlas;
+use rand::prelude::SliceRandom;
 use strum_macros::EnumIter;
 
 use crate::{collision, MainBundle, util};
 use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::{RTEMO_PALETTE, TILE};
+use crate::rounds::{CurrentRound, MovementTypes};
 use crate::util::{Palette, Side, z_pos};
-use crate::util::size::tile_to_f32;
+use crate::util::size::{tile_to_f32, WIDTH};
 
 #[derive(Debug, EnumIter, Copy, Clone)]
 pub enum Monsters {
@@ -29,6 +31,21 @@ pub enum Monsters {
 }
 
 impl Monsters {
+    pub fn random_boss() -> Self {
+        *[Monsters::SuperEye, Monsters::Skulleton, Monsters::Blob, Monsters::CashKnight].choose(&mut rand::thread_rng()).unwrap()
+    }
+
+    pub fn random_non_boss() -> Self {
+        *[Monsters::MagicCandle, Monsters::MrCactus, Monsters::Necromancer, Monsters::StarFly, Monsters::SpaceCrab, Monsters::SpaceShrimp, Monsters::Bat, Monsters::Shroom, Monsters::Fox,].choose(&mut rand::thread_rng()).unwrap()
+    }
+
+    pub fn is_boss(&self) -> bool {
+        match self {
+            Monsters::SuperEye | Monsters::Skulleton | Monsters::Blob | Monsters::CashKnight => true,
+            _ => false,
+        }
+    }
+
     pub fn sprite(&self) -> &[TILE] {
         match self {
             Monsters::CashKnight => &sprites::CASH_KNIGHT,
@@ -154,6 +171,11 @@ pub enum MonsterPath {
 }
 
 impl MonsterPath {
+    pub fn is_linear(&self) -> bool { match self {
+        MonsterPath::Linear(_) => true,
+        _ => false,
+    } }
+
     pub fn compute_move(&self, init_pos: Vec2, t: f32, side: Side) -> Vec2 {
         match *self {
             MonsterPath::Static => init_pos,
@@ -193,8 +215,11 @@ pub fn monster_dies(
 ) {
     for (monster, invincible, id) in monsters.iter() {
         if monster.lives <= 0 && invincible.0 == 0 {
-            // Should put an animation, freeze something or whatever
             commands.entity(id).despawn_recursive();
+
+            if monster.kind.is_boss() {
+                commands.insert_resource(CurrentRound::new());
+            }
         }
     }
 }
@@ -205,10 +230,19 @@ pub struct MonsterLastMoved {
 }
 
 pub fn move_monsters(
-    mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &Monster, Option<&Invincible>)>,
+    mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &mut Monster, Option<&Invincible>)>,
 ) {
-    for (mut monster_pos, mut monster_last_moved, monster, invincible) in monsters.iter_mut() {
+    for (mut monster_pos, mut monster_last_moved, mut monster, invincible) in monsters.iter_mut() {
         if invincible.is_some() && invincible.unwrap().0 > util::fight::ENEMY_COOLDOWN - util::fight::MONSTERS_FREEZE { continue; }
+
+        if monster.path.is_linear() &&
+            ((monster.side == Side::Left && monster_pos.translation.x > tile_to_f32(4))
+        ||  (monster.side == Side::Right && monster_pos.translation.x < tile_to_f32(WIDTH - 8))) {
+            monster.path = MovementTypes::Boss.to_path(monster.side);
+            monster.init_pos = vec2(monster_pos.translation.x, monster_pos.translation.y);
+            monster_last_moved.ago = 0;
+        }
+
         monster_pos.translation = monster.compute_translation(monster_last_moved.ago as f32);
         monster_last_moved.ago += 1;
     }

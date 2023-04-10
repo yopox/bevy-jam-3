@@ -5,6 +5,7 @@ use bevy::sprite::Anchor;
 use bevy::utils::default;
 use bevy_text_mode::{TextModeSpriteSheetBundle, TextModeTextureAtlasSprite};
 use lazy_static::lazy_static;
+use rand::prelude::SliceRandom;
 
 use size::{HEIGHT, tile_to_f32, WIDTH};
 
@@ -39,6 +40,9 @@ pub mod fight {
     pub const MONSTERS_FREEZE: usize = 40;
     pub const LASER_LOADING: usize = 30;
     pub const LASER_FIRING: usize = 45;
+
+    pub const MONSTER_SPAWN_INTERVAL: u64 = 400;
+    pub const BOSS_AFTER: u64 = 5;
 }
 
 pub mod background {
@@ -103,6 +107,12 @@ pub enum Palette {
     Dark,
 
     Transparent,
+}
+
+impl Palette {
+    pub fn random() -> Self {
+        *[Palette::LightRed, Palette::LightTerracotta, Palette::LightBlue, Palette::LightPurple, Palette::LightGold, Palette::LightCactus].choose(&mut rand::thread_rng()).unwrap()
+    }
 }
 
 lazy_static! {

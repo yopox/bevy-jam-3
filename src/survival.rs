@@ -3,12 +3,12 @@ use std::cmp::{max, min};
 use bevy::prelude::*;
 
 use crate::{GameState, rounds};
-use crate::graphics::text;
 use crate::graphics::monsters::{monster_dies, move_monsters};
 use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
+use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
-use crate::rounds::{CurrentRound, Rounds};
+use crate::rounds::CurrentRound;
 use crate::util::{Palette, Side, z_pos};
 use crate::weapons::{monster_looses_life, spawn_weapon, WeaponChanged, Weapons};
 
@@ -65,7 +65,7 @@ fn setup(
         .insert(SurvivalUI);
 
     // Round
-    commands.insert_resource(CurrentRound::from(Rounds::random()));
+    commands.insert_resource(CurrentRound::new());
 }
 
 fn increase_score(

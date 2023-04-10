@@ -55,6 +55,7 @@ impl BodyType {
         match (self, other) {
             (BodyType::Enemy, BodyType::ShipShot) | (BodyType::ShipShot, BodyType::Enemy) => true,
             (BodyType::Ship, BodyType::EnemyShot) | (BodyType::EnemyShot, BodyType::Ship) => true,
+            (BodyType::Enemy, BodyType::Ship) | (BodyType::Ship, BodyType::Enemy) => true,
             _ => false
         }
     }
@@ -121,8 +122,8 @@ pub fn add_invincible(
             if *b == BodyType::Ship || *b == BodyType::Enemy {
                 // TODO: Small freeze for enemies, global freeze if the ship is hit, long global freeze if ship is destroyed
                 if let Ok(Some(_)) = invincible.get(*e) { continue; }
-                if let Some(mut commands) = commands.get_entity(*e) {
-                    commands.insert(Invincible(fight::ENEMY_COOLDOWN));
+                if let Some(mut entity_commands) = commands.get_entity(*e) {
+                    entity_commands.insert(Invincible(fight::ENEMY_COOLDOWN));
                 }
                 // info!("Hit!");
             }

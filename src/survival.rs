@@ -3,8 +3,9 @@ use std::cmp::{max, min};
 use bevy::prelude::*;
 
 use crate::{GameState, rounds};
+use crate::collision::add_invincible;
 use crate::graphics::monsters::{monster_dies, move_monsters};
-use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
+use crate::graphics::ship::{monsters_kill, ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
@@ -21,7 +22,8 @@ impl Plugin for SurvivalPlugin {
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
                 (update_score, increase_score, update_life, update_ship_image, update_ship_y,
-                 update_ship_name, monster_looses_life, monster_dies, move_monsters, rounds::update)
+                 update_ship_name, monster_looses_life, monster_dies, move_monsters, rounds::update,
+                 monsters_kill.after(add_invincible))
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -35,7 +37,7 @@ struct SurvivalUI;
 struct Score(i64);
 
 #[derive(Component)]
-struct Life(i8);
+pub struct Life(pub(crate) i8);
 
 const LIFE_TEXTS: [&str; 6] = ["°°°°°", "•°°°°", "••°°°", "•••°°", "••••°", "•••••"];
 
@@ -57,8 +59,8 @@ fn setup(
         .spawn(text("life[", 18, 1, z_pos::GUI))
         .insert(SurvivalUI);
     commands
-        .spawn(color_text(LIFE_TEXTS[5], 23, 1, z_pos::GUI, Palette::Transparent, Palette::Red))
-        .insert(Life(2))
+        .spawn(color_text(LIFE_TEXTS[0], 23, 1, z_pos::GUI, Palette::Transparent, Palette::Red))
+        .insert(Life(5))
         .insert(SurvivalUI);
     commands
         .spawn(text("]", 28, 1, z_pos::GUI))

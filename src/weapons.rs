@@ -393,17 +393,12 @@ pub fn monster_looses_life(
     shot_info: Query<&Shot>,
 ) {
     for Contact((body1, id1), (body2, id2)) in contact.iter() {
-        match (body1, body2) {
-            (BodyType::Enemy, BodyType::ShipShot) => {
-                if let Ok(shot) = shot_info.get(*id2) {
-                    if let Ok(mut monster) = monsters.get_mut(*id1) {
-                        monster.lives -= shot.damage;
-                    }
-                }
-            }
-            (BodyType::ShipShot, BodyType::Enemy) => {
-                if let Ok(shot) = shot_info.get(*id1) {
-                    if let Ok(mut monster) = monsters.get_mut(*id2) {
+        match ((body1, id1), (body2, id2)) {
+            ((BodyType::Enemy, id_enemy), (BodyType::ShipShot, id_shot)) |
+            ((BodyType::ShipShot, id_shot), (BodyType::Enemy, id_enemy))
+            => {
+                if let Ok(shot) = shot_info.get(*id_shot) {
+                    if let Ok(mut monster) = monsters.get_mut(*id_enemy) {
                         monster.lives -= shot.damage;
                     }
                 }

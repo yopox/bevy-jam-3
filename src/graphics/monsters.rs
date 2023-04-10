@@ -72,7 +72,7 @@ impl Monsters {
     fn palette(&self) -> Vec<Palette> {
         match self {
             Monsters::CashKnight => vec![Palette::Transparent, Palette::Black, Palette::Gold],
-            Monsters::MrCactus => sprites::RTEMO_PALETTE.iter().map(|p| *p).collect::<Vec<Palette>>(),
+            Monsters::MrCactus => RTEMO_PALETTE.iter().map(|p| *p).collect::<Vec<Palette>>(),
             Monsters::Necromancer => vec![Palette::Transparent, Palette::Black, Palette::LightGold],
             Monsters::StarFly => vec![Palette::Transparent, Palette::Black, Palette::Black],
             Monsters::SpaceCrab => vec![Palette::Transparent, Palette::Black, Palette::Lava],
@@ -233,11 +233,14 @@ pub fn move_monsters(
     mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &mut Monster, Option<&Invincible>)>,
 ) {
     for (mut monster_pos, mut monster_last_moved, mut monster, invincible) in monsters.iter_mut() {
-        if invincible.is_some() && invincible.unwrap().0 > util::fight::ENEMY_COOLDOWN - util::fight::MONSTERS_FREEZE { continue; }
+        if (invincible.is_some()
+            && invincible.unwrap().0 > util::fight::ENEMY_COOLDOWN - util::fight::MONSTERS_FREEZE)
+            || monster.lives <= 0
+        { continue; }
 
         if monster.path.is_linear() &&
             ((monster.side == Side::Left && monster_pos.translation.x > tile_to_f32(4))
-        ||  (monster.side == Side::Right && monster_pos.translation.x < tile_to_f32(WIDTH - 8))) {
+                || (monster.side == Side::Right && monster_pos.translation.x < tile_to_f32(WIDTH - 8))) {
             monster.path = MovementTypes::Boss.to_path(monster.side);
             monster.init_pos = vec2(monster_pos.translation.x, monster_pos.translation.y);
             monster_last_moved.ago = 0;

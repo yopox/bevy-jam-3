@@ -1,10 +1,13 @@
 use bevy::prelude::*;
 use bevy_text_mode::TextModeTextureAtlasSprite;
 
-use crate::{MainBundle, util};
+use crate::{collision, MainBundle, util};
+use crate::collision::{BodyType, Contact, SolidBody};
 use crate::graphics::animation::NoAnimation;
+use crate::graphics::monsters::Monster;
 use crate::graphics::sprites;
 use crate::graphics::text::glyph_index;
+use crate::survival::Life;
 use crate::util::{ship, Side, size, z_pos};
 use crate::util::size::tile_to_f32;
 use crate::weapons::WeaponChanged;
@@ -24,6 +27,7 @@ pub fn spawn_ship(
     commands: &mut Commands,
     atlas: &Handle<TextureAtlas>,
 ) {
+    let body_size = collision::body_size(&sprites::SHIP);
     let colors = sprites::RTEMO_PALETTE;
     commands
         .spawn(Ship { y: 0 })
@@ -32,6 +36,12 @@ pub fn spawn_ship(
             ship::INIT_Y,
             z_pos::MACHINE,
         ))
+        .insert(SolidBody {
+            body_type: BodyType::Ship,
+            width: body_size.x,
+            height: body_size.y,
+            bottom_right_anchor: false,
+        })
         .with_children(|builder| {
             for (x, y, i, bg, fg, flip, rotation) in sprites::SHIP {
                 let mut commands = builder
@@ -83,5 +93,27 @@ pub fn update_ship_name(
         ship_char.for_each_mut(|(mut sprite, ship_char)| {
             if ship_char.0 == *side { sprite.index = glyph_index(weapon.name).expect("Couldn't find weapon name glyph index.") }
         })
+    }
+}
+
+pub fn monsters_kill(
+    mut life: Query<&mut Life>,
+    mut contacts: EventReader<Contact>,
+    mut monsters: Query<&mut Monster>,
+) {
+    for Contact((body1, id1), (body2, id2)) in contacts.iter() {
+        match ((body1, id1), (body2, id2)) {
+            ((BodyType::Enemy, id_enemy), (BodyType::Ship, id_ship)) |
+            ((BodyType::Ship, id_ship), (BodyType::Enemy, id_enemy))
+            => {
+                if let Ok(mut life) = life.get_single_mut() {
+                    life.0 -= 1;
+                }
+                if let Ok(mut monster) = monsters.get_mut(*id_enemy) {
+                    monster.lives = 0;
+                }
+            }
+            _ => {}
+        }
     }
 }

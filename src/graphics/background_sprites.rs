@@ -12,6 +12,8 @@ pub enum ElementSize {
     Grass,
     Elements,
     Medium,
+    TxT,
+    Horizontal,
 }
 
 impl ElementSize {
@@ -25,9 +27,13 @@ impl ElementSize {
                 .choose(&mut rand::thread_rng()).unwrap(),
             ElementSize::Grass => [GRASS.as_ref(), GRASS2.as_ref(), FLOWER.as_ref(), FLOWER2.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
-            ElementSize::Elements => [CHARIOT.as_ref(), GRAVE.as_ref(), SKULL_SIGN.as_ref(), RUINS.as_ref(), CHARIOT.as_ref()]
+            ElementSize::Elements => [CHARIOT.as_ref(), GRAVE.as_ref(), SKULL_SIGN.as_ref(), CHARIOT.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
             ElementSize::Medium => [LAVA_LAKE.as_ref(), LAVA2.as_ref()]
+                .choose(&mut rand::thread_rng()).unwrap(),
+            ElementSize::TxT => [TFLOWER.as_ref(), TROCK.as_ref(), TGRASS.as_ref(), TLAVA.as_ref(), TMUSH.as_ref(), TBUSH.as_ref(), TMARIO.as_ref()]
+                .choose(&mut rand::thread_rng()).unwrap(),
+            ElementSize::Horizontal => [RUINS.as_ref()]
                 .choose(&mut rand::thread_rng()).unwrap(),
         }
     }
@@ -39,6 +45,7 @@ pub enum Layouts {
     Layout2,
     Layout3,
     Layout4,
+    Layout5,
 }
 
 impl Layouts {
@@ -61,6 +68,7 @@ impl Layouts {
                 (ElementSize::Ground, 5, 7),
                 (ElementSize::Ground, 1, 7),
                 (ElementSize::Elements, 1, 1),
+                (ElementSize::TxT, 7, 0),
             ],
 
             Layouts::Layout3 => vec![
@@ -75,6 +83,15 @@ impl Layouts {
                 (ElementSize::Small, 2, 0),
                 (ElementSize::Ground, 6, 3),
                 (ElementSize::Grass, 8, 0),
+                (ElementSize::TxT, 0, 0),
+            ],
+
+            Layouts::Layout5 => vec![
+                (ElementSize::Horizontal, 2, 5),
+                (ElementSize::Small, 1, 1),
+                (ElementSize::Ground, 8, 6),
+                (ElementSize::Grass, 9, 2),
+                (ElementSize::TxT, 6, 0),
             ],
 
             // Layouts::Layout2 => vec![
@@ -84,6 +101,101 @@ impl Layouts {
         }
     }
 }
+
+//3x3
+const TGRASS: [TILE ; 9] =[
+    (0, 2, 458, 0, 12, true, 0),
+    (1, 2, 0, 0, 4, false, 0),
+    (2, 2, 0, 0, 3, false, 0),
+    (0, 1, 0, 0, 4, false, 0),
+    (1, 1, 0, 0, 3, false, 3),
+    (2, 1, 724, 0, 4, true, 0),
+    (0, 0, 0, 0, 4, false, 0),
+    (1, 0, 462, 0, 12, false, 0),
+    (2, 0, 0, 0, 4, false, 0),
+];
+
+//3x3
+const TMARIO: [TILE ; 9] =[
+    (0, 2, 0, 0, 13, false, 3),
+    (1, 2, 0, 0, 4, false, 0),
+    (2, 2, 396, 0, 17, false, 0),
+    (0, 1, 397, 0, 3, true, 0),
+    (1, 1, 0, 0, 13, false, 0),
+    (2, 1, 428, 0, 13, false, 2),
+    (0, 0, 0, 0, 3, true, 0),
+    (1, 0, 0, 0, 12, false, 0),
+    (2, 0, 425, 0, 12, false, 3),
+];
+
+//3x3
+const TMUSH: [TILE ; 9] =[
+    (0, 2, 0, 0, 4, false, 0),
+    (1, 2, 724, 0, 3, false, 0),
+    (2, 2, 0, 0, 3, false, 0),
+    (0, 1, 844, 0, 4, false, 0),
+    (1, 1, 0, 0, 3, false, 3),
+    (2, 1, 0, 0, 4, false, 3),
+    (0, 0, 0, 0, 4, false, 0),
+    (1, 0, 0, 0, 3, false, 3),
+    (2, 0, 458, 0, 3, false, 0),
+];
+
+//3x3
+const TBUSH: [TILE ; 9] =[
+    (0, 2, 0, 0, 4, false, 0),
+    (1, 2, 0, 0, 4, true, 0),
+    (2, 2, 724, 0, 3, true, 0),
+    (0, 1, 10, 0, 12, true, 0),
+    (1, 1, 9, 0, 12, true, 0),
+    (2, 1, 8, 0, 12, true, 0),
+    (0, 0, 397, 0, 4, true, 0),
+    (1, 0, 0, 0, 4, true, 0),
+    (2, 0, 0, 0, 4, true, 3),
+];
+
+//3x3
+const TLAVA: [TILE ; 12] =[
+    (0, 2, 0, 0, 1, false, 0),
+    (1, 2, 8, 0, 4, false, 0),
+    (2, 2, 463, 0, 4, true, 0),
+    (3, 2, 397, 0, 2, false, 3),
+    (0, 1, 72, 0, 4, false, 0),
+    (1, 1, 73, 4, 2, false, 1),
+    (2, 1, 398, 4, 2, true, 0),
+    (3, 1, 161, 0, 4, false, 1),
+    (0, 0, 0, 0, 1, false, 0),
+    (1, 0, 8, 0, 4, true, 2),
+    (2, 0, 238, 0, 4, true, 0),
+    (3, 0, 205, 0, 4, true, 3),
+];
+
+
+//3x3
+const TFLOWER: [TILE ; 9] = [
+    (0, 2, 458, 0, 12, true, 0),
+    (1, 2, 0, 0, 4, false, 0),
+    (2, 2, 396, 0, 17, false, 0),
+    (0, 1, 0, 0, 4, false, 0),
+    (1, 1, 0, 0, 3, false, 3),
+    (2, 1, 463, 0, 12, false, 0),
+    (0, 0, 397, 0, 3, true, 0),
+    (1, 0, 0, 0, 12, false, 0),
+    (2, 0, 0, 0, 4, false, 0),
+];
+
+//3x3
+const TROCK: [TILE ; 9] = [
+    (0, 2, 293, 0, 3, false, 0),
+    (1, 2, 0, 0, 3, false, 3),
+    (2, 2, 0, 0, 3, false, 0),
+    (0, 1, 0, 0, 3, false, 3),
+    (1, 1, 0, 0, 3, false, 3),
+    (2, 1, 456, 0, 3, false, 3),
+    (0, 0, 330, 0, 4, false, 0),
+    (1, 0, 0, 0, 3, false, 3),
+    (2, 0, 0, 0, 3, false, 3),
+];
 
 // 7x2
 const ROCKS2: [TILE; 14] = [

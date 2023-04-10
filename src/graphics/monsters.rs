@@ -75,6 +75,11 @@ impl Monsters {
             Monsters::SpaceCrab => 3,
             Monsters::SpaceShrimp => 4,
             Monsters::SuperEye => 25,
+            Monsters::Skulleton => 20,
+            Monsters::Bat => 4,
+            Monsters::Shroom => 3,
+            Monsters::Fox => 30,
+            Monsters::Blob => 5,
         }
     }
 }

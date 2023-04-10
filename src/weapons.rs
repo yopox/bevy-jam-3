@@ -3,10 +3,10 @@ use strum_macros::EnumIter;
 
 use crate::{GameState, MainBundle, util};
 use crate::collision::{BodyType, Contact, SolidBody};
+use crate::graphics::monsters::Monster;
 use crate::graphics::ship::Ship;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
-use crate::survival::Monster;
 use crate::util::{is_oob, Palette, Side, z_pos};
 use crate::util::size::tile_to_f32;
 
@@ -177,7 +177,7 @@ pub fn spawn_weapon(
     if side == Side::Right { weapon.tile.flip = !weapon.tile.flip };
     commands
         .spawn(ActiveWeapon(side, weapon.clone()))
-        .insert(Transform::from_xyz(0., 0., util::z_pos::WEAPONS))
+        .insert(Transform::from_xyz(0., 0., z_pos::WEAPONS))
         .insert(GlobalTransform::default())
         .insert(VisibilityBundle::default())
         .with_children(|spawn| { spawn.spawn(weapon.tile.sprite(0, 0, 0., atlas)); });

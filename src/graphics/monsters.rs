@@ -4,12 +4,11 @@ use bevy::sprite::TextureAtlas;
 use strum_macros::EnumIter;
 
 use crate::{collision, MainBundle, util};
-use crate::collision::{BodyType, SolidBody};
+use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
-use crate::survival::{Monster, MonsterLastMoved};
 use crate::util::{Palette, Side, z_pos};
-use crate::util::size::tile_to_f32;
+use crate::util::size::{tile_to_f32, WIDTH};
 
 #[derive(Debug, EnumIter)]
 pub enum Monsters {
@@ -104,7 +103,7 @@ pub fn spawn_monster(
         .insert(MonsterLastMoved::default())
         .with_children(|builder| {
             for &(x, y, i, bg, fg, flip, rotation) in monster.sprite() {
-                let mut commands = builder.spawn(
+                builder.spawn(
                     util::sprite(
                         i, x, y, 0.,
                         palette[bg], palette[fg],
@@ -115,4 +114,49 @@ pub fn spawn_monster(
             }
         })
         .id()
+}
+
+#[derive(Component)]
+pub struct Monster {
+    pub lives: i16,
+    pub speed: Vec2,
+    pub side: Side,
+}
+
+impl Monster {
+    pub fn new(lives: i16, speed: Vec2, side: Side) -> Self {
+        Self { lives, speed, side }
+    }
+}
+
+pub fn monster_dies(
+    monsters: Query<(&Monster, &Invincible, Entity), Changed<Invincible>>,
+    mut commands: Commands,
+) {
+    for (monster, invincible, id) in monsters.iter() {
+        if monster.lives <= 0 && invincible.0 == 0 {
+            // Should put an animation, freeze something or whatever
+            commands.entity(id).despawn_recursive();
+        }
+    }
+}
+
+#[derive(Component, Default)]
+pub struct MonsterLastMoved {
+    ago: usize,
+}
+
+pub fn move_monsters(
+    mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &Monster), Without<Invincible>>,
+) {
+    for (mut monster_pos, mut monster_last_moved, monster) in monsters.iter_mut() {
+        if monster_last_moved.ago as f32 * monster.speed.x > tile_to_f32(1) {
+            monster_last_moved.ago = 0;
+            if monster_pos.translation.x < tile_to_f32(WIDTH / 2 - 2) || tile_to_f32(WIDTH / 2 - 1) < monster_pos.translation.x {
+                monster_pos.translation.x += tile_to_f32(1) * monster.side.to_sign_f32();
+            }
+        } else {
+            monster_last_moved.ago += 1;
+        }
+    }
 }

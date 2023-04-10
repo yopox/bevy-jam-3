@@ -2,16 +2,13 @@ use std::cmp::{max, min};
 
 use bevy::prelude::*;
 
-use crate::collision::Invincible;
 use crate::GameState;
-use crate::graphics::{monsters, text};
-use crate::graphics::frame::spawn_frame;
+use crate::graphics::text;
 use crate::graphics::monsters::{Families, monster_dies, Monsters, move_monsters, spawn_monster};
 use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
 use crate::util::{Palette, Side, z_pos};
-use crate::util::size::{tile_to_f32, WIDTH};
 use crate::weapons::{monster_looses_life, spawn_weapon, WeaponChanged, Weapons};
 
 pub struct SurvivalPlugin;
@@ -47,7 +44,6 @@ fn setup(
     textures: Res<Textures>,
     mut weapon_changed: EventWriter<WeaponChanged>,
 ) {
-    spawn_frame(&mut commands, &textures.mrmotext);
     spawn_ship(&mut commands, &textures.mrmotext);
     spawn_weapon(Weapons::Laser, Side::Left, &mut commands, &textures.mrmotext, &mut weapon_changed);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::StarFly, Families::Bats, 23, 14);

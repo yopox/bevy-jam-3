@@ -7,6 +7,7 @@ use crate::graphics::background;
 use crate::graphics::background::Background;
 use crate::graphics::frame::spawn_frame;
 use crate::graphics::text::color_text;
+use crate::graphics::transition::Transition;
 use crate::loading::Textures;
 use crate::util::{Palette, Side, z_pos};
 
@@ -42,7 +43,7 @@ fn setup(
         ("breaks", 20, 6),
     ] {
         commands
-            .spawn(color_text(t, x, y, z_pos::GUI, Palette::Transparent, Palette::LightTerracotta))
+            .spawn(color_text(t, x, y, z_pos::BACKGROUND_TEXT, Palette::Transparent, Palette::LightTerracotta))
             .insert(TitleUI);
     }
 
@@ -54,12 +55,12 @@ fn setup(
 }
 
 fn exit_title(
-    mut selection: EventReader<choose::Select>,
-    mut next_state: ResMut<NextState<GameState>>,
+    mut commands: Commands,
+    mut selection: EventReader<Select>,
 ) {
     for Select(side) in selection.iter() {
         // TODO: Different game mode
-        next_state.set(GameState::Survival)
+        commands.insert_resource(Transition::to(GameState::Survival));
     }
 }
 

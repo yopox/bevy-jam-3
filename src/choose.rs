@@ -4,6 +4,7 @@ use bevy::prelude::*;
 
 use crate::graphics::text;
 use crate::graphics::text::text;
+use crate::graphics::transition::Transition;
 use crate::loading::Textures;
 use crate::util;
 use crate::util::{Palette, Side, sprite, z_pos};
@@ -44,10 +45,12 @@ pub fn update(
     mut choose: Option<ResMut<Choose>>,
     mut select: EventWriter<Select>,
     mut text: Query<&mut text::Text, With<SelectionText>>,
+    transition: Option<Res<Transition>>,
     frame: Query<Entity, With<Border>>,
     keys: Res<Input<KeyCode>>,
     textures: Res<Textures>,
 ) {
+    if transition.is_some() { return; }
     let Some(mut choose) = choose else { return; };
 
     for (key, side, side_text) in [
@@ -101,7 +104,7 @@ fn spawn_border(
             let side_y = if side == Side::Right { util::choose::SIDE_Y } else { 0 };
             commands
                 .spawn(sprite(
-                    tile, x + util::choose::BORDER_X + side_y, y + util::choose::BORDER_Y, z_pos::CHOOSE_BORDER,
+                    tile, x + util::choose::BORDER_X + side_y, y + util::choose::BORDER_Y, z_pos::BACKGROUND_TEXT,
                     Palette::Transparent, Palette::Lava,
                     false, rotation, atlas.clone()
                 ))

@@ -27,6 +27,8 @@ pub mod z_pos {
     pub const SHOTS: f32 = 4.;
     pub const WEAPONS: f32 = 7.;
     pub const MACHINE: f32 = 8.;
+    pub const BACKGROUND_TEXT: f32 = 8.5;
+    pub const TRANSITION: f32 = 9.;
     pub const FRAME: f32 = 10.;
     pub const GUI: f32 = 12.;
     pub const CHOOSE_BORDER: f32 = 14.;
@@ -58,6 +60,18 @@ pub mod choose {
     pub const BORDER_X: usize = 3;
     pub const BORDER_Y: usize = 4;
     pub const SIDE_Y: usize = 15;
+}
+
+pub mod transition {
+    use crate::util::size::HEIGHT;
+
+    pub const HALF_HEIGHT: usize = HEIGHT / 2 - 1;
+    pub const SPEED: u64 = 800;
+}
+
+pub mod tweening {
+    pub const TRANSITION_OVER: u64 = 1;
+    pub const DELAY: u64 = 200;
 }
 
 #[derive(Copy, Clone, Eq, PartialEq)]

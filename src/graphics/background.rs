@@ -33,8 +33,8 @@ fn setup(
 ) {
     spawn_rails(&mut commands, &textures.mrmotext);
 
-    timer.0 = (rand::thread_rng().next_u32() % 600) as isize;
-    timer.1 = (rand::thread_rng().next_u32() % 600) as isize;
+    timer.0 = 0;
+    timer.1 = 0;
     spawn_layout(&mut commands, Side::Left, 0, &textures.mrmotext);
     spawn_layout(&mut commands, Side::Right, 0, &textures.mrmotext);
 }
@@ -87,9 +87,9 @@ fn update_background(
     timer.0 -= 1;
     timer.1 -= 1;
     if timer.0 <= 0 {
-        timer.0 = spawn_layout(&mut commands, Side::Left, util::background::LAYOUT_HEIGHT as isize, &textures.mrmotext);
+        timer.0 = spawn_layout(&mut commands, Side::Left, size::HEIGHT as isize, &textures.mrmotext);
     } else if timer.1 <= 0 {
-        timer.1 = spawn_layout(&mut commands, Side::Right, util::background::LAYOUT_HEIGHT as isize, &textures.mrmotext);
+        timer.1 = spawn_layout(&mut commands, Side::Right, size::HEIGHT as isize, &textures.mrmotext);
     }
 
     // Move and despawn entities

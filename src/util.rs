@@ -41,7 +41,7 @@ pub mod fight {
 }
 
 pub mod background {
-    pub const SPEED: f32 = 0.05;
+    pub const SPEED: f32 = 0.1;
     pub const ALPHA: f32 = 0.35;
     pub const LAYOUT_WIDTH: usize = 13;
     pub const LAYOUT_HEIGHT: usize = 13;

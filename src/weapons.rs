@@ -120,7 +120,7 @@ impl Plugin for WeaponPlugin {
             .add_event::<WeaponChanged>()
             .add_systems(
                 (update_weapons, shoot, update_shots, collide_shot, update_laser_shots,
-                 switch_weapons)
+                 switch_weapons.after(tiles::flip))
                     .in_set(OnUpdate(GameState::Survival))
             );
     }

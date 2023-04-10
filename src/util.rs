@@ -190,4 +190,11 @@ impl Side {
     pub fn of_x(x: usize) -> Self {
         if x < WIDTH / 2 { Side::Left } else { Side::Right }
     }
+
+    pub const fn flip(self) -> Self {
+        match self {
+            Side::Left => Side::Right,
+            Side::Right => Side::Left,
+        }
+    }
 }

@@ -47,6 +47,7 @@ pub enum BodyType {
     EnemyShot,
     Ship,
     ShipShot,
+    Ghost,
 }
 
 impl BodyType {

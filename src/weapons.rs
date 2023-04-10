@@ -5,6 +5,7 @@ use crate::{GameState, MainBundle, util};
 use crate::collision::{BodyType, Contact, SolidBody};
 use crate::graphics::monsters::Monster;
 use crate::graphics::ship::Ship;
+use crate::graphics::tiles;
 use crate::graphics::tiles::{Tile, Tiles};
 use crate::loading::Textures;
 use crate::util::{is_oob, Palette, Side, z_pos};
@@ -43,6 +44,17 @@ pub struct Weapon {
     pub shot_tile: Tile,
     pub cooldown: u16,
     pub name: char,
+}
+
+impl Weapon {
+    pub const fn get_solid_body() -> SolidBody {
+        SolidBody {
+            body_type: BodyType::Ghost,
+            width: tile_to_f32(1),
+            height: tile_to_f32(1),
+            bottom_right_anchor: false,
+        }
+    }
 }
 
 #[derive(Debug, EnumIter, Copy, Clone, PartialEq, Eq)]
@@ -107,14 +119,18 @@ impl Plugin for WeaponPlugin {
         app
             .add_event::<WeaponChanged>()
             .add_systems(
-                (update_weapons, shoot, update_shots, collide_shot, update_laser_shots)
+                (update_weapons, shoot, update_shots, collide_shot, update_laser_shots,
+                 switch_weapons)
                     .in_set(OnUpdate(GameState::Survival))
             );
     }
 }
 
 #[derive(Component)]
-pub struct ActiveWeapon(pub Side, pub Weapon);
+pub struct ActiveWeapon {
+    pub side: Side,
+    pub weapon: Weapon,
+}
 
 pub struct WeaponChanged(pub Side, pub Weapon);
 
@@ -176,7 +192,8 @@ pub fn spawn_weapon(
     let mut weapon: Weapon = weapon.into();
     if side == Side::Right { weapon.tile.flip = !weapon.tile.flip };
     commands
-        .spawn(ActiveWeapon(side, weapon.clone()))
+        .spawn(ActiveWeapon { side, weapon })
+        .insert(Weapon::get_solid_body())
         .insert(Transform::from_xyz(0., 0., z_pos::WEAPONS))
         .insert(GlobalTransform::default())
         .insert(VisibilityBundle::default())
@@ -192,15 +209,37 @@ fn update_weapons(
     let ship_pos = ship.single().translation;
 
     for (weapon, just_fired, mut pos, id) in weapons.iter_mut() {
-        let &ActiveWeapon(side, Weapon { cooldown, .. }) = weapon;
+        let &ActiveWeapon { side, weapon: Weapon { cooldown, .. } } = weapon;
         pos.translation.x = ship_pos.x + if side == Side::Left { -2. } else { tile_to_f32(3) + 2. };
         pos.translation.y = ship_pos.y + tile_to_f32(2);
         if let Some(mut just_fired) = just_fired {
-            if just_fired.0 <= weapon.1.cooldown / 2 { pos.translation.x += if weapon.0 == Side::Left { 1. } else { -1. }; }
+            if just_fired.0 <= cooldown / 2 { pos.translation.x += side.to_sign_f32(); }
             just_fired.0 += 1;
             if just_fired.0 >= cooldown {
                 commands.entity(id).remove::<JustFired>();
             }
+        }
+    }
+}
+
+fn switch_weapons(
+    mut commands: Commands,
+    mut weapons: Query<(&mut ActiveWeapon, Entity), With<SolidBody>>,
+    laser_shots: Query<Entity, With<LaserShot>>,
+    keys: Res<Input<KeyCode>>,
+    mut weapon_changed: EventWriter<WeaponChanged>,
+) {
+    if keys.just_pressed(KeyCode::Space) {
+        for (mut active_weapon, e) in weapons.iter_mut() {
+            let old_side = active_weapon.side;
+            let new_side = old_side.flip();
+            active_weapon.side = new_side;
+            weapon_changed.send(WeaponChanged(new_side, active_weapon.weapon));
+            commands.entity(e).insert(tiles::Flip);
+        }
+
+        for e in laser_shots.iter() {
+            commands.entity(e).despawn_recursive()
         }
     }
 }
@@ -214,19 +253,13 @@ fn shoot(
 ) {
     for (key_code, side) in [(KeyCode::Left, Side::Left), (KeyCode::Right, Side::Right)] {
         if keys.pressed(key_code) {
-            for (&ActiveWeapon(weapon_side, weapon), just_fired, pos, id) in &weapons {
+            for (&ActiveWeapon { side: weapon_side, weapon }, just_fired, pos, id) in &weapons {
                 if weapon_side != side || just_fired.is_some() { continue; }
-                let mut opt_shot_id: Option<Entity> = None;
+                commands.entity(id).insert(JustFired(0));
 
                 for &shot in weapon.model.get_shots().iter() {
-                    let shot_id = spawn_shot(shot, &mut commands, &textures, side, weapon, pos, ship.get_single().ok());
-
-                    if weapon.model == Weapons::Laser {
-                        opt_shot_id = Some(shot_id);
-                    }
+                    spawn_shot(shot, &mut commands, &textures, side, weapon, pos, ship.get_single().ok());
                 }
-
-                commands.entity(id).insert(JustFired(0));
             }
         }
     }
@@ -240,7 +273,7 @@ fn spawn_shot(
     weapon: Weapon,
     pos: &Transform,
     ship: Option<Entity>,
-) -> Entity {
+) {
     let mut shot = shot.clone();
     let mut entity_commands = commands.spawn(shot.with_side(side));
     let entity_commands = entity_commands
@@ -261,8 +294,7 @@ fn spawn_shot(
                 offset: Vec2::new(if side == Side::Left { -tile_to_f32(1) - 1. } else { tile_to_f32(4) + 1. }, tile_to_f32(2)),
                 state: LaserState::Loading,
                 frame: 0,
-            })
-            .id()
+            });
     } else {
         entity_commands
             .insert(SolidBody {
@@ -270,8 +302,7 @@ fn spawn_shot(
                 width: tile_to_f32(1),
                 height: tile_to_f32(1),
                 bottom_right_anchor: false,
-            })
-            .id()
+            });
     }
 }
 

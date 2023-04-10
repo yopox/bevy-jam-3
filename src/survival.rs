@@ -6,7 +6,7 @@ use crate::collision::Invincible;
 use crate::GameState;
 use crate::graphics::{monsters, text};
 use crate::graphics::frame::spawn_frame;
-use crate::graphics::monsters::{Families, Monsters, spawn_monster};
+use crate::graphics::monsters::{Families, monster_dies, Monsters, move_monsters, spawn_monster};
 use crate::graphics::ship::{ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::graphics::text::{color_text, text};
 use crate::loading::Textures;
@@ -23,7 +23,7 @@ impl Plugin for SurvivalPlugin {
             .add_system(setup.in_schedule(OnEnter(GameState::Survival)))
             .add_systems(
                 (update_score, increase_score, update_life, update_ship_image, update_ship_y,
-                 update_ship_name, monster_looses_life, monsters::monster_dies, monsters::move_monsters)
+                 update_ship_name, monster_looses_life, monster_dies, move_monsters)
                     .in_set(OnUpdate(GameState::Survival))
             )
             .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
@@ -58,7 +58,7 @@ fn setup(
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::MagicCandle, Families::Color(Palette::Cactus), 11, 5);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::Necromancer, Families::Color(Palette::Red), 26, 5);
     spawn_monster(&mut commands, &textures.mrmotext, Monsters::MrCactus, Families::Color(Palette::Red), 5, 11);
-    spawn_weapon(Weapons::Laser, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
+    spawn_weapon(Weapons::Finger, Side::Right, &mut commands, &textures.mrmotext, &mut weapon_changed);
 
     commands
         .spawn(text("score[000000]", 3, 1, z_pos::GUI))

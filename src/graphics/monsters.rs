@@ -1,6 +1,8 @@
 use bevy::asset::Handle;
 use bevy::prelude::*;
+use bevy::prelude::system_adapter::new;
 use bevy::sprite::TextureAtlas;
+use rand::random;
 use strum_macros::EnumIter;
 
 use crate::{collision, MainBundle, util};
@@ -8,7 +10,17 @@ use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
 use crate::util::{Palette, Side, z_pos};
-use crate::util::size::{tile_to_f32, WIDTH};
+use crate::util::choose::{BORDER_HEIGHT, BORDER_WIDTH};
+use crate::util::size::{HEIGHT, tile_to_f32, WIDTH};
+
+fn random_pos_on_side(side: Side) -> Vec2 {
+    let x = match side {
+        Side::Left => tile_to_f32(2),
+        Side::Right => tile_to_f32(WIDTH - 2),
+    };
+    let y = random::<f32>() * tile_to_f32(HEIGHT - 2 * 3) + tile_to_f32(3);
+    Vec2 { x, y }
+}
 
 #[derive(Debug, EnumIter)]
 pub enum Monsters {
@@ -51,14 +63,14 @@ impl Monsters {
 
     fn to_monster(&self, side: Side) -> Monster {
         match self {
-            Monsters::MagicCandle => Monster::new(5, Vec2::new(1. / 29., 0.), side),
-            Monsters::CashKnight => Monster::new(10, Vec2::new(1. / 31., 0.), side),
-            Monsters::MrCactus => Monster::new(10, Vec2::new(1. / 53., 0.), side),
-            Monsters::Necromancer => Monster::new(5, Vec2::new(1. / 9., 0.), side),
-            Monsters::StarFly => Monster::new(20, Vec2::new(1. / 12., 0.), side),
-            Monsters::SpaceCrab => Monster::new(30, Vec2::new(1. / 37., 0.), side),
-            Monsters::SpaceShrimp => Monster::new(30, Vec2::new(1. / 41., 0.), side),
-            Monsters::SuperEye => Monster::new(100, Vec2::new(1. / 100., 0.), side),
+            Monsters::MagicCandle => Monster::new_with_random_pos(5, MonsterPath::Linear(Vec2::new(1. / 29., 0.)), side),
+            Monsters::CashKnight => Monster::new_with_random_pos(10, MonsterPath::Linear(Vec2::new(1. / 31., 0.)), side),
+            Monsters::MrCactus => Monster::new_with_random_pos(10, MonsterPath::Linear(Vec2::new(1. / 53., 0.)), side),
+            Monsters::Necromancer => Monster::new_with_random_pos(5, MonsterPath::Linear(Vec2::new(1. / 9., 0.)), side),
+            Monsters::StarFly => Monster::new_with_random_pos(20, MonsterPath::Sinusoid { speed_x: 1. / 12., frequency_y: 1. / 12., amplitude_y: tile_to_f32(3) }, side),
+            Monsters::SpaceCrab => Monster::new_with_random_pos(30, MonsterPath::Sinusoid { speed_x: 1. / 37., frequency_y: 1. / 37., amplitude_y: tile_to_f32(4) }, side),
+            Monsters::SpaceShrimp => Monster::new_with_random_pos(30, MonsterPath::Linear(Vec2::new(1. / 41., 0.)), side),
+            Monsters::SuperEye => Monster::new_with_random_pos(100, MonsterPath::Linear(Vec2::new(1. / 100., 0.)), side),
         }
     }
 }
@@ -116,16 +128,53 @@ pub fn spawn_monster(
         .id()
 }
 
+pub enum MonsterPath {
+    /// Stays at the same position
+    Static,
+    /// Move with speed indicated
+    Linear(Vec2),
+    /// Move with sin
+    Sinusoid {
+        speed_x: f32,
+        frequency_y: f32,
+        amplitude_y: f32,
+    },
+}
+
+impl MonsterPath {
+    pub fn compute_move(&self, init_pos: Vec2, t: f32, side: Side) -> Vec2 {
+        match *self {
+            MonsterPath::Static => init_pos,
+            MonsterPath::Linear(v) => init_pos + v * t * side.to_sign_f32(),
+            MonsterPath::Sinusoid { speed_x, frequency_y, amplitude_y } => {
+                let dx = speed_x * t * side.to_sign_f32();
+                let dy = amplitude_y * (t * frequency_y).sin();
+                Vec2 { x: init_pos.x + dx, y: init_pos.y + dy }
+            }
+        }
+    }
+}
+
 #[derive(Component)]
 pub struct Monster {
     pub lives: i16,
-    pub speed: Vec2,
+    pub path: MonsterPath,
+    pub init_pos: Vec2,
     pub side: Side,
 }
 
 impl Monster {
-    pub fn new(lives: i16, speed: Vec2, side: Side) -> Self {
-        Self { lives, speed, side }
+    pub fn new(lives: i16, path: MonsterPath, init_pos: Vec2, side: Side) -> Self {
+        Self { lives, path, init_pos, side }
+    }
+
+    pub fn new_with_random_pos(lives: i16, path: MonsterPath, side: Side) -> Self {
+        Self::new(lives, path, random_pos_on_side(side), side)
+    }
+
+    pub fn compute_translation(&self, t: f32) -> Vec3 {
+        let Vec2 { x, y } = self.path.compute_move(self.init_pos, t, self.side);
+        Vec3 { x, y, z: z_pos::ENEMIES }
     }
 }
 
@@ -150,13 +199,11 @@ pub fn move_monsters(
     mut monsters: Query<(&mut Transform, &mut MonsterLastMoved, &Monster), Without<Invincible>>,
 ) {
     for (mut monster_pos, mut monster_last_moved, monster) in monsters.iter_mut() {
-        if monster_last_moved.ago as f32 * monster.speed.x > tile_to_f32(1) {
-            monster_last_moved.ago = 0;
-            if monster_pos.translation.x < tile_to_f32(WIDTH / 2 - 2) || tile_to_f32(WIDTH / 2 - 1) < monster_pos.translation.x {
-                monster_pos.translation.x += tile_to_f32(1) * monster.side.to_sign_f32();
-            }
-        } else {
+        if monster_pos.translation.x < tile_to_f32(WIDTH / 2 - 2) || tile_to_f32(WIDTH / 2 - 1) < monster_pos.translation.x {
+            monster_pos.translation = monster.compute_translation(monster_last_moved.ago as f32);
             monster_last_moved.ago += 1;
+        } else {
+            // We should do something here, like loose life or whatever.
         }
     }
 }

@@ -206,15 +206,16 @@ pub fn spawn_weapon(
 
 fn update_weapons(
     mut commands: Commands,
-    ship: Query<&Transform, With<Ship>>,
-    mut weapons: Query<(&ActiveWeapon, Option<&mut JustFired>, &mut Transform, Entity), Without<Ship>>,
+    ship: Query<(&Transform, &Visibility), With<Ship>>,
+    mut weapons: Query<(&ActiveWeapon, Option<&mut JustFired>, &mut Transform, &mut Visibility, Entity), Without<Ship>>,
 ) {
-    let ship_pos = ship.single().translation;
+    let (ship_pos, ship_vis) = ship.single();
 
-    for (weapon, just_fired, mut pos, id) in weapons.iter_mut() {
+    for (weapon, just_fired, mut pos, mut vis, id) in weapons.iter_mut() {
         let &ActiveWeapon { side, weapon: Weapon { cooldown, .. } } = weapon;
-        pos.translation.x = ship_pos.x + if side == Side::Left { -2. } else { tile_to_f32(3) + 2. };
-        pos.translation.y = ship_pos.y + tile_to_f32(2);
+        pos.translation.x = ship_pos.translation.x + if side == Side::Left { -2. } else { tile_to_f32(3) + 2. };
+        pos.translation.y = ship_pos.translation.y + tile_to_f32(2);
+        vis.set_if_neq(*ship_vis);
         if let Some(mut just_fired) = just_fired {
             if just_fired.0 <= cooldown / 2 { pos.translation.x += side.to_sign_f32(); }
             just_fired.0 += 1;

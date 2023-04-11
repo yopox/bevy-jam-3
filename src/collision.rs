@@ -7,7 +7,7 @@ use bevy::utils::default;
 use bevy_text_mode::TextModeTextureAtlasSprite;
 use strum::IntoEnumIterator;
 
-use crate::graphics::monsters::Monsters;
+use crate::characters::monsters::Monsters;
 use crate::graphics::sprites;
 use crate::graphics::sprites::TILE;
 use crate::util::{fight, Palette, size};

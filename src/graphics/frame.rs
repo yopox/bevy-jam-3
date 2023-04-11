@@ -1,7 +1,6 @@
 use bevy::prelude::{Commands, Handle};
 use bevy::sprite::TextureAtlas;
 
-use crate::survival::SurvivalUI;
 use crate::util;
 use crate::util::{Palette, size, z_pos};
 
@@ -19,7 +18,7 @@ pub fn spawn_frame(
                         false, 0,
                         atlas.clone(),
                     )
-                ).insert(SurvivalUI);
+                );
             }
         }
     }
@@ -33,6 +32,6 @@ pub fn spawn_frame(
         commands.spawn(util::sprite(
             223, x, y, z_pos::FRAME, Palette::Black, Palette::Transparent,
             false, rotation, atlas.clone(),
-        )).insert(SurvivalUI);
+        ));
     }
 }

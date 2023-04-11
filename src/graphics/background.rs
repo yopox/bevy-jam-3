@@ -8,7 +8,7 @@ use crate::{GameState, MainBundle, util};
 use crate::graphics::animation::NoAnimation;
 use crate::graphics::background_sprites::Layouts;
 use crate::graphics::sprites;
-use crate::loading::Textures;
+use crate::screens::Textures;
 use crate::util::{Palette, Side, size, z_pos};
 use crate::util::size::tile_to_f32;
 

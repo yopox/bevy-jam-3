@@ -5,7 +5,7 @@ use bevy_tweening::{Animator, Delay, EaseFunction, Tween, TweenCompleted};
 use bevy_tweening::lens::TransformPositionLens;
 
 use crate::{GameState, MainBundle, util};
-use crate::loading::Textures;
+use crate::screens::Textures;
 use crate::util::{Palette, sprite};
 use crate::util::size::{tile_to_f32, WIDTH};
 

@@ -3,14 +3,15 @@ use std::cmp::{max, min};
 use bevy::prelude::*;
 
 use crate::{GameState, rounds};
+use crate::characters::monsters::{monster_dies, move_monsters};
+use crate::characters::ship::{monsters_kill, Ship, ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
 use crate::collision::{add_invincible, collide, Invincible};
-use crate::graphics::monsters::{monster_dies, move_monsters};
-use crate::graphics::ship::{monsters_kill, Ship, ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
+use crate::graphics::background::Background;
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
 use crate::graphics::transition::Transition;
-use crate::loading::Textures;
 use crate::rounds::CurrentRound;
+use crate::screens::Textures;
 use crate::util::{Palette, Side, z_pos};
 use crate::weapons::{monster_looses_life, spawn_weapon, WeaponChanged, Weapons};
 
@@ -61,7 +62,7 @@ fn setup(
         .insert(SurvivalUI);
     commands
         .spawn(color_text(LIFE_TEXTS[0], 23, 1, z_pos::GUI, Palette::Transparent, Palette::Red))
-        .insert(Life(5))
+        .insert(Life(3))
         .insert(SurvivalUI);
     commands
         .spawn(text("]", 28, 1, z_pos::GUI))
@@ -111,8 +112,8 @@ fn game_over(
 fn cleanup(
     mut commands: Commands,
     query: Query<Entity, With<SurvivalUI>>,
+    background: Query<Entity, (With<Background>, Without<SurvivalUI>)>,
 ) {
-    for e in query.iter() {
-        commands.entity(e).despawn_recursive();
-    }
+    for e in &query { commands.entity(e).despawn_recursive(); }
+    for e in &background { commands.entity(e).despawn_recursive(); }
 }

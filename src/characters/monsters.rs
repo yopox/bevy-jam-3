@@ -10,7 +10,7 @@ use crate::collision::{BodyType, Invincible, SolidBody};
 use crate::graphics::sprites;
 use crate::graphics::sprites::{RTEMO_PALETTE, TILE};
 use crate::rounds::{CurrentRound, MovementTypes};
-use crate::survival::SurvivalUI;
+use crate::screens::survival::SurvivalUI;
 use crate::util::{Palette, Side, z_pos};
 use crate::util::size::{tile_to_f32, WIDTH};
 
@@ -62,11 +62,6 @@ impl Monsters {
             Monsters::Shroom => &sprites::SHROOM,
             Monsters::Fox => &sprites::FOX,
             Monsters::Blob => &sprites::BLOB,
-
-
-
-
-
         }
     }
 

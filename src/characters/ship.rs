@@ -2,12 +2,13 @@ use bevy::prelude::*;
 use bevy_text_mode::TextModeTextureAtlasSprite;
 
 use crate::{collision, MainBundle, util};
+use crate::characters::monsters::Monster;
 use crate::collision::{BodyType, Contact, Invincible, SolidBody};
 use crate::graphics::animation::NoAnimation;
-use crate::graphics::monsters::Monster;
 use crate::graphics::sprites;
 use crate::graphics::text::glyph_index;
-use crate::survival::{Life, SurvivalUI};
+use crate::progress::Progress;
+use crate::screens::survival::{Life, SurvivalUI};
 use crate::util::{ship, Side, size, z_pos};
 use crate::util::size::tile_to_f32;
 use crate::weapons::WeaponChanged;
@@ -79,10 +80,11 @@ pub fn update_ship_y(
 }
 
 pub fn update_ship_image(
-    mut query: Query<(&mut Transform, &Ship), Changed<Ship>>
+    mut query: Query<(&mut Transform, &Ship), Changed<Ship>>,
+    progress: Res<Progress>,
 ) {
     if let Ok((mut transform, ship)) = query.get_single_mut() {
-        transform.translation.y = ship::INIT_Y + ship::SPEED * ship.y as f32;
+        transform.translation.y = ship::INIT_Y + progress.ship_speed * ship.y as f32;
     }
 }
 

@@ -5,8 +5,8 @@ use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
 use crate::{collision, util};
-use crate::graphics::monsters::{Families, Monster, MonsterPath, Monsters, spawn_monster};
-use crate::loading::Textures;
+use crate::characters::monsters::{Families, Monster, MonsterPath, Monsters, spawn_monster};
+use crate::screens::Textures;
 use crate::util::{Palette, Side};
 use crate::util::size::{tile_to_f32, WIDTH};
 

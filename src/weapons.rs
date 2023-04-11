@@ -2,13 +2,12 @@ use bevy::prelude::*;
 use strum_macros::EnumIter;
 
 use crate::{GameState, MainBundle, util};
+use crate::characters::monsters::Monster;
+use crate::characters::ship::Ship;
 use crate::collision::{BodyType, Contact, SolidBody};
-use crate::graphics::monsters::Monster;
-use crate::graphics::ship::Ship;
 use crate::graphics::tiles;
 use crate::graphics::tiles::{Tile, Tiles};
-use crate::loading::Textures;
-use crate::survival::SurvivalUI;
+use crate::screens::Textures;
 use crate::util::{is_oob, Palette, Side, z_pos};
 use crate::util::size::tile_to_f32;
 
@@ -123,9 +122,13 @@ impl Plugin for WeaponPlugin {
                 (update_weapons, shoot, update_shots, collide_shot, update_laser_shots,
                  switch_weapons.after(tiles::flip))
                     .in_set(OnUpdate(GameState::Survival))
-            );
+            )
+            .add_system(cleanup.in_schedule(OnExit(GameState::Survival)));
     }
 }
+
+#[derive(Component)]
+struct WeaponsUI;
 
 #[derive(Component)]
 pub struct ActiveWeapon {
@@ -194,11 +197,9 @@ pub fn spawn_weapon(
     if side == Side::Right { weapon.tile.flip = !weapon.tile.flip };
     commands
         .spawn(ActiveWeapon { side, weapon })
-        .insert(SurvivalUI)
         .insert(Weapon::get_solid_body())
-        .insert(Transform::from_xyz(0., 0., z_pos::WEAPONS))
-        .insert(GlobalTransform::default())
-        .insert(VisibilityBundle::default())
+        .insert(MainBundle::from_xyz(0., 0., z_pos::WEAPONS))
+        .insert(WeaponsUI)
         .with_children(|spawn| { spawn.spawn(weapon.tile.sprite(0, 0, 0., atlas)); });
     weapon_changed.send(WeaponChanged(side, weapon));
 }
@@ -279,11 +280,11 @@ fn spawn_shot(
     let mut shot = shot.clone();
     let mut entity_commands = commands.spawn(shot.with_side(side));
     let entity_commands = entity_commands
-        .insert(SurvivalUI)
         .insert(MainBundle::from_xyz(
             pos.translation.x - (tile_to_f32(1) + shot.dx) * side.to_sign_f32(),
             pos.translation.y + shot.dy,
             z_pos::SHOTS))
+        .insert(WeaponsUI)
         .with_children(|spawn| {
             let mut tile = weapon.shot_tile;
             if side == Side::Right { tile = tile.flip(); }
@@ -418,4 +419,11 @@ fn destroy_shot(commands: &mut Commands, shot_info: &Query<&Shot>, body1: &BodyT
             commands.entity(*id1).despawn_recursive();
         }
     }
+}
+
+fn cleanup(
+    mut commands: Commands,
+    query: Query<Entity, With<WeaponsUI>>,
+) {
+    for e in &query { commands.entity(e).despawn_recursive(); }
 }

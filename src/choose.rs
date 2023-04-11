@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::graphics::text;
 use crate::graphics::text::text;
 use crate::graphics::transition::Transition;
-use crate::loading::Textures;
+use crate::screens::Textures;
 use crate::util;
 use crate::util::{Palette, Side, sprite, z_pos};
 

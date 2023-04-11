@@ -1,8 +1,8 @@
 use bevy::app::App;
 use bevy::prelude::*;
 
-use crate::loading::Textures;
 use crate::MainBundle;
+use crate::screens::Textures;
 use crate::util::{Palette, size, sprite};
 
 pub struct TextPlugin;

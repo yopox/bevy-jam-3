@@ -9,13 +9,11 @@ use crate::graphics::text::TextPlugin;
 pub mod frame;
 pub mod text;
 pub mod background;
-pub mod ship;
 pub mod tiles;
-pub mod monsters;
 pub mod sprites;
 pub mod transition;
 mod background_sprites;
-mod animation;
+pub(crate) mod animation;
 
 pub struct GraphicsPlugin;
 

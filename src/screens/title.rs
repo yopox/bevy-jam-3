@@ -8,7 +8,8 @@ use crate::graphics::background::Background;
 use crate::graphics::frame::spawn_frame;
 use crate::graphics::text::color_text;
 use crate::graphics::transition::Transition;
-use crate::loading::Textures;
+use crate::progress::Progress;
+use crate::screens::Textures;
 use crate::util::{Palette, Side, z_pos};
 
 pub struct TitlePlugin;
@@ -59,6 +60,7 @@ fn exit_title(
     mut selection: EventReader<Select>,
 ) {
     for Select(side) in selection.iter() {
+        commands.insert_resource(Progress::default());
         // TODO: Different game mode
         commands.insert_resource(Transition::to(GameState::Survival));
     }

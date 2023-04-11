@@ -2,10 +2,10 @@ use std::cmp::{max, min};
 
 use bevy::prelude::*;
 
-use crate::{GameState, rounds};
+use crate::{GameState, rounds, util};
 use crate::characters::monsters::{monster_dies, move_monsters};
 use crate::characters::ship::{monsters_kill, Ship, ShipMoveEvent, spawn_ship, update_ship_image, update_ship_name, update_ship_y};
-use crate::collision::{add_invincible, collide, Invincible};
+use crate::collision::{add_invincible, collide};
 use crate::graphics::background::Background;
 use crate::graphics::text;
 use crate::graphics::text::{color_text, text};
@@ -100,11 +100,11 @@ fn update_life(
 fn game_over(
     mut commands: Commands,
     lives: Query<&Life, Changed<Life>>,
-    ship: Query<&Ship, Without<Invincible>>,
+    ship: Query<&Ship>,
 ) {
     if let Ok(&Life(lives)) = lives.get_single() {
         if lives <= 0 && ship.get_single().is_ok() {
-            commands.insert_resource(Transition::to(GameState::Title));
+            commands.insert_resource(Transition::to(GameState::Title).with_delay(util::fight::GAME_OVER_DELAY));
         }
     }
 }

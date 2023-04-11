@@ -16,12 +16,17 @@ use crate::util::size::{tile_to_f32, WIDTH};
 pub struct Transition {
     in_progress: bool,
     next_state: Option<GameState>,
+    delay: u64,
 }
 
 impl Transition {
-    pub fn to(state: GameState) -> Self { Self { in_progress: false, next_state: Some(state) } }
-    pub fn open() -> Self { Self { in_progress: false, next_state: None } }
+    pub fn to(state: GameState) -> Self { Self { in_progress: false, next_state: Some(state), delay: 1 } }
+    pub fn open() -> Self { Self { in_progress: false, next_state: None, delay: 1 } }
     pub fn is_opening(&self) -> bool { self.next_state.is_none() }
+
+    pub fn with_delay(&mut self, delay: u64) -> Self {
+        Self { in_progress: self.in_progress, next_state: self.next_state, delay }
+    }
 }
 
 #[derive(Component)]
@@ -60,10 +65,12 @@ pub(in crate::graphics) fn start_transition(
             .spawn(MainBundle::from_xyz(0., left_start_y, util::z_pos::TRANSITION))
             .insert(TransitionPane)
             .insert(Animator::new(
-                tween(left_start_y, left_end_y)
-                    .then(Delay::new(Duration::from_millis(util::tweening::DELAY))
-                        .with_completed_event(util::tweening::TRANSITION_OVER)
-                    )
+                Delay::new(Duration::from_millis(transition.delay)).then(
+                    tween(left_start_y, left_end_y)
+                        .then(Delay::new(Duration::from_millis(util::tweening::DELAY))
+                            .with_completed_event(util::tweening::TRANSITION_OVER)
+                        )
+                )
             ))
             .with_children(|builder| {
                 let last_y = util::transition::HALF_HEIGHT - 1;
@@ -88,7 +95,7 @@ pub(in crate::graphics) fn start_transition(
         commands
             .spawn(MainBundle::from_xyz(0., right_start_y, util::z_pos::TRANSITION))
             .insert(TransitionPane)
-            .insert(Animator::new(tween(right_start_y, right_end_y)))
+            .insert(Animator::new(Delay::new(Duration::from_millis(transition.delay)).then(tween(right_start_y, right_end_y))))
             .with_children(|builder| {
                 for y in 0..util::transition::HALF_HEIGHT {
                     for x in 0..WIDTH {

@@ -41,6 +41,7 @@ pub mod fight {
     pub const LASER_LOADING: usize = 30;
     pub const LASER_FIRING: usize = 45;
 
+    pub const GAME_OVER_DELAY: u64 = 2000;
     pub const MONSTER_SPAWN_INTERVAL: u64 = 400;
     pub const BOSS_AFTER: u64 = 5;
 }
